@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - InventoryHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1f5bff;
+            --primary-light: #2950fa;
+            --primary-dark: #0039cb;
+            --secondary-color: #ff0000;
+            --text-primary: #2c3345;
+            --text-secondary: #6b7280;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --border-color: #e5e7eb;
+            --sidebar-width: 240px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 2rem 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .avatar-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+        }
+
+        .user-details h1 {
+            font-size: 1.125rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-role {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 1rem 0;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--primary-light);
+            color: var(--bg-secondary);
+            border-left-color: var(--primary-color);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            max-width: calc(100% - var(--sidebar-width));
+        }
+
+        .content-header {
+            margin-bottom: 2rem;
+        }
+
+        .content-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .content-header p {
+            color: var(--text-secondary);
+        }
+
+        .section-content {
+            display: none;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        .profile-section {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-header i {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+        }
+
+        .profile-list {
+            list-style: none;
+        }
+
+        .profile-list li {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .profile-list li:last-child {
+            border-bottom: none;
+        }
+
+        .profile-list li span:first-child {
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .profile-list li span:last-child {
+            color: var(--text-primary);
+        }
+
+        .edit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .edit-btn:hover {
+            background-color: var(--primary-dark);
+            color: white;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--text-secondary);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent-color);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--secondary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            background: #fff1f1;
+        }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border: none;
+        }
+
+        .alert-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .alert-error {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1000;
+            }
+
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+            }
+
+            .show-sidebar .sidebar {
+                transform: translateX(0);
+            }
+        }
+
+
+
+
+
+        /* check  */
+
+    :root {
+        --primary-color: #1f5bff;
+        --primary-light: #2950fa;
+        --primary-dark: #0039cb;
+        --secondary-color: #ff0000;
+        --text-primary: #2c3345;
+        --text-secondary: #6b7280;
+        --bg-primary: #f8fafc;
+        --bg-secondary: #ffffff;
+        --border-color: #e5e7eb;
+        --sidebar-width: 240px;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        width: var(--sidebar-width);
+        height: 100vh;
+        background: var(--bg-secondary);
+        border-right: 1px solid var(--border-color);
+        position: fixed;
+        left: 0;
+        top: 0;
+        padding: 2rem 0;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .sidebar.hide {
+        transform: translateX(-100%);
+    }
+
+    .sidebar-header {
+        padding: 0 1.5rem 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    /* Sidebar Toggle Button */
+    .sidebar-toggle {
+        display: none;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        z-index: 1000;
+    }
+
+    .main-content {
+        flex: 1;
+        margin-left: var(--sidebar-width);
+        padding: 2rem;
+        max-width: calc(100% - var(--sidebar-width));
+        transition: margin-left 0.3s ease-in-out;
+    }
+
+    /* When Sidebar is Hidden */
+    .main-content.full {
+        margin-left: 0;
+        max-width: 100%;
+    }
+
+    /* Profile Sections */
+    .profile-section {
+        background: var(--bg-secondary);
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .profile-list li {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .sidebar {
+            transform: translateX(-100%);
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .sidebar-toggle {
+            display: block;
+        }
+
+        .main-content {
+            margin-left: 0;
+            max-width: 100%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 220px;
+        }
+
+        .sidebar-toggle {
+            font-size: 14px;
+            padding: 0.5rem;
+        }
+
+        .main-content {
+            padding: 1.5rem;
+        }
+
+        .profile-list li {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .sidebar {
+            width: 200px;
+        }
+
+        .main-content {
+            padding: 1rem;
+        }
+
+        .profile-section {
+            padding: 1rem;
+        }
+
+        .profile-list li {
+            font-size: 14px;
+        }
+
+        .edit-btn {
+            font-size: 12px;
+            padding: 0.4rem 0.8rem;
+        }
+
+        .sidebar-toggle {
+            font-size: 12px;
+            padding: 0.3rem 0.7rem;
+        }
+    }
+
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="avatar-container">
+                <div class="avatar">{{ user.username[0] | upper }}</div>
+                <div class="user-details">
+                    <h1>{{ user.username }}</h1>
+                    <span class="user-role">{{ user.role }}</span>
+                </div>
+            </div>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item active" data-section="personal-info">
+                <i class="fas fa-user"></i>
+                <span>Personal Information</span>
+            </li>
+            <li class="nav-item" data-section="security">
+                <i class="fas fa-shield-alt"></i>
+                <span>Security Settings</span>
+            </li>
+            <li class="nav-item" data-section="notifications">
+                <i class="fas fa-bell"></i>
+                <span>Notifications</span>
+            </li>
+        </ul>
+        <a href="{{ url_for('logout') }}" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Log Out</span>
+        </a>
+    </div>
+
+    <div class="main-content">
+        <div class="content-header">
+            <h2>Profile Settings</h2>
+            <p>Manage your account settings and preferences</p>
+        </div>
+
+      
+
+        <div class="section-content active" id="personal-info">
+            <div class="profile-section">
+                <div class="section-header">
+                    <i class="fas fa-user"></i>
+                    <h2>Personal Information</h2>
+                </div>
+                <ul class="profile-list">
+                    <li>
+                        <span><i class="fas fa-building"></i> Company Name</span>
+                        <span>{{ user.username }}</span>
+                    </li>
+                    <li>
+                        <span><i class="fas fa-envelope"></i> Email</span>
+                        <span>{{ user.email }}</span>
+                    </li>
+                    <li>
+                        <span><i class="fas fa-phone"></i> Phone</span>
+                        <span>{{ user.phone }}</span>
+                    </li>
+                    <li>
+                        <span><i class="fas fa-globe"></i> Country</span>
+                        <span>{{ user.country }}</span>
+                    </li>
+                    <li>
+                        <span><i class="fas fa-map-marker-alt"></i> State</span>
+                        <span>{{ user.state }}</span>
+                    </li>
+                    <li>
+                        <span><i class="fas fa-clock"></i> Last Login</span>
+                        <span>{{ user.last_login.strftime('%b %d, %Y %I:%M %p') }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section-content" id="security">
+            <div class="profile-section">
+                <div class="section-header">
+                    <i class="fas fa-shield-alt"></i>
+                    <h2>Security Settings</h2>
+                </div>
+                <ul class="profile-list">
+                    <li>
+                        <span><i class="fas fa-key"></i> Password</span>
+                        <a href="{{ url_for('change_password') }}" class="edit-btn">Change</a>
+                    </li>
+                    <li>
+                        <span><i class="fas fa-lock"></i> Two-Factor Authentication</span>
+                        <div class="toggle-switch" id="2faToggle"></div>
+                    </li>
+                    <li>
+                        <span><i class="fas fa-shield-alt"></i> Login History</span>
+                        <button class="edit-btn">View</button>
+                    </li>
+                    <li>
+                        <span><i class="fas fa-clock"></i> Session Timeout</span>
+                        <select class="form-control" style="width: auto;">
+                            <option value="15">15 minutes</option>
+                            <option value="30" selected>30 minutes</option>
+                            <option value="60">1 hour</option>
+                        </select>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section-content" id="notifications">
+            <div class="profile-section">
+                <div class="section-header">
+                    <i class="fas fa-bell"></i>
+                    <h2>Notification Preferences</h2>
+                </div>
+                <ul class="profile-list">
+                    <li>
+                        <span><i class="fas fa-envelope"></i> Email Notifications</span>
+                        <div class="toggle-switch active"></div>
+                    </li>
+                    <li>
+                        <span><i class="fas fa-mobile-alt"></i> SMS Alerts</span>
+                        <div class="toggle-switch"></div>
+                    </li>
+                    <li>
+                        <span><i class="fas fa-desktop"></i> Browser Notifications</span>
+                        <div class="toggle-switch active"></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+
+                this.classList.add('active');
+
+                const sectionId = this.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.toggle-switch').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+
+        document.querySelector('.logout-btn').addEventListener('click', function(e) {
+            if (!confirm('Are you sure you want to log out?')) {
+                e.preventDefault();
+            }
+        });
+
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.querySelector('.sidebar');
+        const toggleButton = document.createElement('button');
+        toggleButton.classList.add('sidebar-toggle');
+        toggleButton.innerText = "☰ Menu";
+        document.body.appendChild(toggleButton);
+
+        toggleButton.addEventListener('click', function() {
+            sidebar.classList.toggle('show');
+        });
+    });
+
+
+    </script>
+</body>
+</html>

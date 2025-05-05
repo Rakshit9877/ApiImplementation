@@ -1,0 +1,157 @@
+{% extends 'employee/base.html' %}
+
+{% block title %}Employees - Employee Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Employees</h1>
+    <p class="lead">Manage your organization's employees</p>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="card-title">Employee List</h3>
+            <a href="{% url 'employee:employee_add' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Employee
+            </a>
+        </div>
+
+        <!-- Filters -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <label for="department" class="form-label">Department</label>
+                <select name="department" id="department" class="form-select">
+                    <option value="">All Departments</option>
+                    {% for dept in departments %}
+                    <option value="{{ dept.id }}" {% if request.GET.department == dept.id|stringformat:"i" %}selected{% endif %}>
+                        {{ dept.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="role" class="form-label">Role</label>
+                <select name="role" id="role" class="form-select">
+                    <option value="">All Roles</option>
+                    {% for role in roles %}
+                    <option value="{{ role.id }}" {% if request.GET.role == role.id|stringformat:"i" %}selected{% endif %}>
+                        {{ role.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="search" class="form-label">Search</label>
+                <input type="text" class="form-control" id="search" name="search" value="{{ request.GET.search }}" placeholder="Search employees...">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="button" class="btn btn-primary me-2" id="filterButton">Apply Filters</button>
+                <button type="button" class="btn btn-secondary" id="clearButton">Clear</button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Role</th>
+                        <th>Phone</th>
+                        <th>Hire Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in employees %}
+                    <tr>
+                        <td>{{ employee.name }}</td>
+                        <td>{{ employee.email }}</td>
+                        <td>{{ employee.department.name }}</td>
+                        <td>{{ employee.role.name }}</td>
+                        <td>{{ employee.phone }}</td>
+                        <td>{{ employee.hire_date|date:"Y-m-d" }}</td>
+                        <td>
+                            <a href="{% url 'employee:employee_edit' employee.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button class="btn btn-sm btn-outline-danger delete-employee"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteEmployeeModal"
+                                    data-id="{{ employee.id }}"
+                                    data-name="{{ employee.name }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">No employees found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Employee Modal -->
+<div class="modal fade" id="deleteEmployeeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="" id="deleteEmployeeForm">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Employee</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the employee "<span id="deleteEmployeeName"></span>"?</p>
+                    <p class="text-danger">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete Employee</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter functionality
+    const filterButton = document.getElementById('filterButton');
+    const clearButton = document.getElementById('clearButton');
+    const departmentSelect = document.getElementById('department');
+    const roleSelect = document.getElementById('role');
+    const searchInput = document.getElementById('search');
+
+    filterButton.addEventListener('click', function() {
+        const params = new URLSearchParams();
+        if (departmentSelect.value) params.append('department', departmentSelect.value);
+        if (roleSelect.value) params.append('role', roleSelect.value);
+        if (searchInput.value) params.append('search', searchInput.value);
+        window.location.href = `${window.location.pathname}?${params.toString()}`;
+    });
+
+    clearButton.addEventListener('click', function() {
+        window.location.href = window.location.pathname;
+    });
+
+    // Delete Employee
+    document.querySelectorAll('.delete-employee').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const name = this.dataset.name;
+            document.getElementById('deleteEmployeeName').textContent = name;
+            document.getElementById('deleteEmployeeForm').action = "{% url 'employee:employee_delete' 0 %}".replace('0', id);
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %} 

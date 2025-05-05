@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - InventoryHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+    .main-content {
+        display: flex;
+        min-height: 100vh;
+        margin-top: 0;
+        padding-top: 0;
+        position: relative;
+    }
+    
+    .content-wrapper {
+        flex: 1;
+        padding: 20px;
+        margin-left: 260px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    {% include 'components/sidebar.html' %}
+    
+    <div class="content-wrapper">
+        <div class="dashboard-header" style="background-color: aqua;">
+            <div class="dashboard-title">
+                <h1 style="color: white;">Dashboard Overview</h1>
+                <p style="color: white;">Welcome back, {{ user.username }}</p>
+            </div>
+            <div class="date-selector">
+                <span class="text-muted me-2">{{ current_date|date:"F j, Y" }}</span>
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Total Items</div>
+                    <div class="stat-icon blue">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{ total_items }}</div>
+                <div class="stat-change change-up">
+                    <i class="fas fa-arrow-up me-1"></i> {{ items_growth|floatformat:1 }}% from last month
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Inventory Value</div>
+                    <div class="stat-icon green">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+                <div class="stat-value">${{ total_inventory_value|floatformat:2 }}</div>
+                <div class="stat-change change-up">
+                    <i class="fas fa-arrow-up me-1"></i> {{ value_growth|floatformat:1 }}% from last month
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Low Stock Items</div>
+                    <div class="stat-icon yellow">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{ low_stock_items }}</div>
+                <div class="stat-change change-down">
+                    <i class="fas fa-arrow-down me-1"></i> Needs attention
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Out of Stock</div>
+                    <div class="stat-icon red">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{ out_of_stock_items }}</div>
+                <div class="stat-change change-down">
+                    <i class="fas fa-arrow-down me-1"></i> Critical items
+                </div>
+            </div>
+        </div>
+
+        <div class="data-section">
+            <div class="section-header">
+                <div class="section-title">Top Value Items</div>
+                <button class="dropdown-toggle">
+                    <i class="fas fa-filter me-1"></i> Filter
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Unit Cost</th>
+                            <th>Quantity</th>
+                            <th>Total Value</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in top_value_items %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>${{ item.cost_price|floatformat:2 }}</td>
+                            <td>{{ item.quantity_in_hand }}</td>
+                            <td>${{ item.calculated_value|floatformat:2 }}</td>
+                            <td>
+                                {% if item.quantity_in_hand > 10 %}
+                                <span class="status-badge active">In Stock</span>
+                                {% elif item.quantity_in_hand > 0 %}
+                                <span class="status-badge pending">Low Stock</span>
+                                {% else %}
+                                <span class="status-badge inactive">Out of Stock</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">No items available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-container">
+                <div class="section-header">
+                    <div class="section-title">Top Margin Items</div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Cost Price</th>
+                                <th>Selling Price</th>
+                                <th>Margin %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in top_margin_items %}
+                            <tr>
+                                <td>{{ item.name }}</td>
+                                <td>${{ item.cost_price|floatformat:2 }}</td>
+                                <td>${{ item.selling_price|floatformat:2 }}</td>
+                                <td>{{ item.calculated_margin|floatformat:2 }}%</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4">No items available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="section-header">
+                    <div class="section-title">Item Groups</div>
+                </div>
+                
+                <div class="bar-chart">
+                    {% for group in group_counts %}
+                    <div class="bar-item">
+                        <div class="bar-label">{{ group.name }}</div>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: {{ group.percentage }}%"></div>
+                        </div>
+                        <div class="bar-value">{{ group.count }}</div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No groups available</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="data-section">
+            <div class="section-header">
+                <div class="section-title">Recent Item Groups</div>
+            </div>
+            
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Group Name</th>
+                            <th>Type</th>
+                            <th>Unit</th>
+                            <th>Returnable</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for group in recent_groups %}
+                        <tr>
+                            <td>{{ group.name }}</td>
+                            <td>{{ group.type|title }}</td>
+                            <td>{{ group.unit }}</td>
+                            <td>{% if group.returnable %}Yes{% else %}No{% endif %}</td>
+                            <td>{{ group.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">No groups available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Example: Toggle filter dropdown
+        const filterBtn = document.querySelector('.dropdown-toggle');
+        if (filterBtn) {
+            filterBtn.addEventListener('click', function() {
+                alert('Filter feature coming soon!');
+            });
+        }
+    });
+</script>
+{% endblock %} 

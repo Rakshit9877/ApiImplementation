@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if group %}Edit Group{% else %}Add Group{% endif %} - InventoryHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+<style>
+    .main-content {
+        display: flex;
+        min-height: 100vh;
+        margin-top: 0;
+        padding-top: 0;
+        position: relative;
+    }
+    
+    .content-wrapper {
+        flex: 1;
+        padding: 20px;
+        margin-left: 260px;
+    }
+    
+    .btn-profile {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    
+    .btn-profile.btn-primary {
+        background-color: #c61b37;
+        color: white;
+        border: none;
+    }
+    
+    .btn-profile.btn-primary:hover {
+        background-color: #931129;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-profile.btn-secondary {
+        background-color: #e2e8f0;
+        color: #4a5568;
+        border: none;
+    }
+    
+    .btn-profile.btn-secondary:hover {
+        background-color: #cbd5e0;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    {% include 'components/sidebar.html' %}
+    
+    <div class="content-wrapper">
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <h1>{% if group %}Edit{% else %}Add{% endif %} Item Group</h1>
+                <p>{% if group %}Update details for {{ group.name }}{% else %}Create a new item group{% endif %}</p>
+            </div>
+            <div>
+                <a href="{% url 'inventory:group_list' %}" class="btn-profile btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Groups
+                </a>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <form method="post" class="styled-form" action="{% if group %}{% url 'inventory:edit_group' group.id %}{% else %}{% url 'inventory:add_group' %}{% endif %}">
+                {% csrf_token %}
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label required" for="{{ form.name.id_for_label }}">Name</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="error-message">{{ form.name.errors }}</div>
+                            {% endif %}
+                            {% if form.name.help_text %}
+                                <div class="help-text">{{ form.name.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label required" for="{{ form.type.id_for_label }}">Type</label>
+                            {{ form.type }}
+                            {% if form.type.errors %}
+                                <div class="error-message">{{ form.type.errors }}</div>
+                            {% endif %}
+                            {% if form.type.help_text %}
+                                <div class="help-text">{{ form.type.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label required" for="{{ form.unit.id_for_label }}">Unit</label>
+                            {{ form.unit }}
+                            {% if form.unit.errors %}
+                                <div class="error-message">{{ form.unit.errors }}</div>
+                            {% endif %}
+                            {% if form.unit.help_text %}
+                                <div class="help-text">{{ form.unit.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="checkbox-wrapper">
+                            {{ form.returnable }}
+                            <label for="{{ form.returnable.id_for_label }}">Returnable</label>
+                            {% if form.returnable.errors %}
+                                <div class="error-message">{{ form.returnable.errors }}</div>
+                            {% endif %}
+                            {% if form.returnable.help_text %}
+                                <div class="help-text">{{ form.returnable.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.manufacturer.id_for_label }}">Manufacturer</label>
+                            {{ form.manufacturer }}
+                            {% if form.manufacturer.errors %}
+                                <div class="error-message">{{ form.manufacturer.errors }}</div>
+                            {% endif %}
+                            {% if form.manufacturer.help_text %}
+                                <div class="help-text">{{ form.manufacturer.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.brand.id_for_label }}">Brand</label>
+                            {{ form.brand }}
+                            {% if form.brand.errors %}
+                                <div class="error-message">{{ form.brand.errors }}</div>
+                            {% endif %}
+                            {% if form.brand.help_text %}
+                                <div class="help-text">{{ form.brand.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.description.id_for_label }}">Description</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="error-message">{{ form.description.errors }}</div>
+                            {% endif %}
+                            {% if form.description.help_text %}
+                                <div class="help-text">{{ form.description.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="formset-container">
+                    <div class="formset-header">
+                        <div class="formset-title">Group Attributes</div>
+                    </div>
+                    <div id="attributes-container">
+                        {{ attributes_formset.management_form }}
+                        {% for form in attributes_formset %}
+                            <div class="formset-item attribute-form">
+                                {{ form.id }}
+                                <div class="form-row">
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label class="form-label" for="{{ form.attribute_name.id_for_label }}">Attribute Name</label>
+                                            {{ form.attribute_name }}
+                                            {% if form.attribute_name.errors %}
+                                                <div class="error-message">{{ form.attribute_name.errors }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label class="form-label" for="{{ form.options.id_for_label }}">Options</label>
+                                            {{ form.options }}
+                                            {% if form.options.errors %}
+                                                <div class="error-message">{{ form.options.errors }}</div>
+                                            {% endif %}
+                                            <div class="help-text">Enter comma-separated values</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-col" style="max-width: 80px;">
+                                        {% if not forloop.first %}
+                                            <button type="button" class="btn btn-outline-danger remove-attribute" style="margin-top: 29px;">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {{ form.DELETE.as_hidden }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <button type="button" id="add-attribute" class="btn btn-outline-secondary mt-3">
+                        <i class="fas fa-plus"></i> Add Attribute
+                    </button>
+                </div>
+                
+                <div class="form-actions">
+                    <a href="{% url 'inventory:group_list' %}" class="btn-form btn-secondary">Cancel</a>
+                    <button type="submit" class="btn-form btn-primary">
+                        <i class="fas {% if group %}fa-save{% else %}fa-plus{% endif %}"></i>
+                        {% if group %}Update{% else %}Create{% endif %} Group
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('attributes-container');
+        const addButton = document.getElementById('add-attribute');
+        const totalForms = document.getElementById('id_attributeformset-TOTAL_FORMS');
+        
+        addButton.addEventListener('click', function() {
+            const formCount = container.getElementsByClassName('attribute-form').length;
+            const newForm = container.getElementsByClassName('attribute-form')[0].cloneNode(true);
+            
+            // Update form index
+            let html = newForm.innerHTML;
+            html = html.replace(/-0-/g, `-${formCount}-`);
+            html = html.replace(/_0_/g, `_${formCount}_`);
+            newForm.innerHTML = html;
+            
+            // Clear inputs
+            newForm.querySelectorAll('input[type="text"]').forEach(input => {
+                input.value = '';
+            });
+            
+            // Add remove button if not present
+            if (!newForm.querySelector('.remove-attribute')) {
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'btn btn-outline-danger remove-attribute';
+                removeButton.innerHTML = '<i class="fas fa-trash"></i>';
+                
+                const buttonCol = document.createElement('div');
+                buttonCol.className = 'form-col';
+                buttonCol.style.maxWidth = '80px';
+                buttonCol.style.marginTop = '29px';
+                buttonCol.appendChild(removeButton);
+                
+                newForm.querySelector('.form-row').appendChild(buttonCol);
+            }
+            
+            container.appendChild(newForm);
+            totalForms.value = container.getElementsByClassName('attribute-form').length;
+            
+            // Add event listener to new remove button
+            newForm.querySelector('.remove-attribute').addEventListener('click', removeAttribute);
+        });
+        
+        // Add event listeners to existing remove buttons
+        document.querySelectorAll('.remove-attribute').forEach(button => {
+            button.addEventListener('click', removeAttribute);
+        });
+        
+        function removeAttribute(e) {
+            const form = e.target.closest('.attribute-form');
+            const deleteInput = form.querySelector('input[name$="-DELETE"]');
+            if (deleteInput) {
+                deleteInput.value = 'on';
+                form.style.display = 'none';
+            } else {
+                form.remove();
+                totalForms.value = container.getElementsByClassName('attribute-form').length;
+            }
+        }
+    });
+</script>
+{% endblock %} 

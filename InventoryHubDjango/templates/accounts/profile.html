@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile - InventoryHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+<style>
+    .btn-profile {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    
+    .btn-profile.btn-primary {
+        background-color: #c61b37;
+        color: white;
+        border: none;
+    }
+    
+    .btn-profile.btn-primary:hover {
+        background-color: #931129;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-profile.btn-secondary {
+        background-color: #e2e8f0;
+        color: #4a5568;
+        border: none;
+    }
+    
+    .btn-profile.btn-secondary:hover {
+        background-color: #cbd5e0;
+        transform: translateY(-2px);
+    }
+    
+    .profile-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    .profile-detail {
+        display: flex;
+        margin-bottom: 12px;
+    }
+    
+    .detail-label {
+        width: 120px;
+        color: #718096;
+        font-weight: 500;
+    }
+    
+    .detail-value {
+        flex: 1;
+        color: #4a5568;
+    }
+    
+    .section-title {
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        color: #333;
+        font-size: 18px;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    {% include 'components/sidebar.html' %}
+    
+    <div class="content-wrapper">
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <h1>User Profile</h1>
+                <p>Manage your account information</p>
+            </div>
+        </div>
+        
+        <div class="profile-container">
+            <div class="profile-content">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <h2 class="profile-name">{{ user.username }}</h2>
+                            <p class="profile-email">{{ user.email }}</p>
+                            {% if user.is_staff or user.is_superuser %}
+                            <span class="profile-badge admin">Administrator</span>
+                            {% else %}
+                            <span class="profile-badge">User</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="profile-sections">
+                        <div>
+                            <h3 class="section-title">Account Information</h3>
+                            <div class="profile-detail">
+                                <div class="detail-label">Username:</div>
+                                <div class="detail-value">{{ user.username }}</div>
+                            </div>
+                            <div class="profile-detail">
+                                <div class="detail-label">Email:</div>
+                                <div class="detail-value">{{ user.email }}</div>
+                            </div>
+                            <div class="profile-detail">
+                                <div class="detail-label">Date Joined:</div>
+                                <div class="detail-value">{{ user.date_joined|date:"F d, Y" }}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="section-title">Contact Information</h3>
+                            <div class="profile-detail">
+                                <div class="detail-label">Phone:</div>
+                                <div class="detail-value">{{ user.profile.phone|default:"Not provided" }}</div>
+                            </div>
+                            <div class="profile-detail">
+                                <div class="detail-label">Country:</div>
+                                <div class="detail-value">{{ user.profile.country|default:"Not provided" }}</div>
+                            </div>
+                            <div class="profile-detail">
+                                <div class="detail-label">State:</div>
+                                <div class="detail-value">{{ user.profile.state|default:"Not provided" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-actions">
+                        <a href="{% url 'accounts:change_password' %}" class="btn-profile btn-primary">
+                            <i class="fas fa-key"></i> Change Password
+                        </a>
+                        <a href="{% url 'accounts:logout' %}" class="btn-profile btn-secondary">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+                
+                {% if user.inventory_logs.exists %}
+                <div class="profile-card">
+                    <h3 class="section-title">Recent Activity</h3>
+                    <p>Last login: {{ user.last_login|date:"F d, Y H:i" }}</p>
+                    
+                    <div style="margin-top: 20px;">
+                        <h4 class="mb-3">Recent Inventory Actions</h4>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Action</th>
+                                        <th>Quantity</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in user.inventory_logs.all|slice:":5" %}
+                                    <tr>
+                                        <td>{{ log.item.name }}</td>
+                                        <td>{{ log.action|title }}</td>
+                                        <td>{{ log.quantity }}</td>
+                                        <td>{{ log.timestamp|date:"M d, Y H:i" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4">No recent activity</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Handle sidebar toggle for mobile
+    document.addEventListener('DOMContentLoaded', function() {
+        // Your additional JS can go here
+    });
+</script>
+{% endblock %} 

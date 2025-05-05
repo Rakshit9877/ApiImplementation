@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="InvenTrack - Comprehensive inventory management software for Indian businesses with GST billing and warehouse management">
+    <title>InventoryHub-Inventory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/inventory.css">
+    <style>
+       
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            background-color: #181C2E;
+            color: #ffffff;
+            padding: 20px 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            position: relative;
+            box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar:hover {
+            /* background-color: rgba(24, 28, 46, 0.95); */
+            backdrop-filter: blur(15px);
+            box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.1),
+                15px 0 35px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-header {
+            padding: 0 24px;
+            margin-bottom: 28px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            height: 60px;
+            position: relative;
+        }
+
+        /* Modern underline animation for header */
+        .sidebar-header::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 24px;
+            width: 32px;
+            height: 3px;
+            background: linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.1) 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .sidebar-header:hover::after {
+            width: calc(100% - 48px);
+        }
+
+        /* Modern scrollbar styling */
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+            margin: 4px 0;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            /* background: rgba(74, 85, 104, 0.4); */
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        /* Expanded scrollbar on hover */
+        .sidebar:hover::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        /* .sidebar:hover::-webkit-scrollbar-thumb {
+            background: rgba(74, 85, 104, 0.8);
+        } */
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            /* background: #718096; */
+            box-shadow: 0 0 10px rgba(113, 128, 150, 0.4);
+        }
+
+        /* Add smooth fade effects for content at top and bottom */
+        .sidebar::before,
+        .sidebar::after {
+            content: '';
+            position: fixed;
+            left: 0;
+            width: 260px;
+            height: 40px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .sidebar::before {
+            top: 0;
+            background: linear-gradient(to bottom, #181C2E 0%, rgba(24, 28, 46, 0) 100%);
+        }
+
+        .sidebar::after {
+            bottom: 0;
+            background: linear-gradient(to top, #181C2E 0%, rgba(24, 28, 46, 0) 100%);
+        }
+
+        /* Optional: Add hover effects for menu items */
+        .sidebar-menu-item {
+            padding: 12px 24px;
+            margin: 4px 12px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-menu-item:hover {
+            /* background: rgba(255, 255, 255, 0.05); */
+            transform: translateX(4px);
+        }
+
+        .sidebar-menu-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-menu-item:hover::before {
+            opacity: 1;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            color: #a0aec0;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: #2d3748;
+            color: #ffffff;
+        }
+
+        .nav-item.active {
+            background-color: #3182ce;
+            color: #ffffff;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: #2d3748;
+        }
+
+        .submenu.open {
+            max-height: 1000px;
+            transition: max-height 0.5s ease-in;
+        }
+
+        .submenu .nav-item {
+            padding-left: 50px;
+            font-size: 14px;
+        }
+
+        .nav-item .arrow {
+            margin-left: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item.open .arrow {
+            transform: rotate(180deg);
+        }
+
+     
+
+
+        /* Base Layout */
+.app-container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* Large Screens (default) */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    position: fixed;
+}
+
+.main-content {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+}
+
+/* Extra Large Screens */
+@media screen and (min-width: 1440px) {
+    .cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        padding: 24px;
+    }
+}
+
+/* Large Laptops */
+@media screen and (max-width: 1200px) {
+    .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        padding: 20px;
+    }
+}
+
+/* Tablets and Small Laptops */
+@media screen and (max-width: 1024px) {
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        padding: 16px;
+    }
+}
+
+/* Tablets */
+@media screen and (max-width: 768px) {
+    .sidebar {
+        width: 0;
+        transform: translateX(-100%);
+        transition: all 0.3s ease;
+    }
+
+    .sidebar.open {
+        width: 260px;
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .header {
+        padding: 12px;
+    }
+
+    .header-left {
+        width: 100%;
+    }
+
+    .search-container {
+        max-width: 300px;
+    }
+
+    .header-right {
+        gap: 8px;
+    }
+
+    .icon-button {
+        padding: 8px;
+    }
+}
+
+/* Large Mobile */
+@media screen and (max-width: 576px) {
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 12px;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .header-left, .header-right {
+        width: 100%;
+    }
+
+    .search-container {
+        max-width: 100%;
+    }
+
+    .header-right {
+        justify-content: space-between;
+    }
+
+    .page-header {
+        padding: 16px 12px;
+    }
+
+    .card {
+        margin: 0;
+    }
+
+    .card-content {
+        padding: 16px;
+    }
+}
+
+/* Small Mobile */
+@media screen and (max-width: 375px) {
+    .header {
+        padding: 8px;
+    }
+
+    .icon-button {
+        padding: 6px;
+    }
+
+    .card-content {
+        padding: 12px;
+    }
+
+    .card-content h2 {
+        font-size: 18px;
+    }
+
+    .card-content p {
+        font-size: 14px;
+    }
+
+    .button.primary {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
+/* Handle sidebar toggle functionality */
+@media screen and (max-width: 768px) {
+    .app-container {
+        position: relative;
+    }
+
+    .sidebar {
+        position: fixed;
+        z-index: 1000;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-content {
+        transition: margin-left 0.3s ease;
+    }
+
+    .main-content.sidebar-open {
+        margin-left: 260px;
+    }
+}
+
+/* Improve touch targets on mobile */
+@media (hover: none) and (pointer: coarse) {
+    .nav-item {
+        padding: 16px 20px;
+    }
+
+    .icon-button {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-boxes"></i>
+                <span>Inventory</span>
+            </div>
+
+            <a href="{{url_for('dashboard')}}">
+                <div class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </div>
+            </a>
+
+            <div class="nav-item" data-submenu="inventory">
+                <i class="fas fa-box"></i>
+                <span>Inventory</span>
+                <i class="fas fa-chevron-down arrow"></i>
+            </div>
+            <div class="submenu" id="inventory">
+                <div class="nav-item">Items</div>
+                <div class="nav-item">Composite Items</div>
+                <div class="nav-item">Item Groups</div>
+                <div class="nav-item">Price Lists</div>
+                <div class="nav-item">Inventory Adjustments</div>
+            </div>
+
+            <div class="nav-item" data-submenu="sales">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Sales</span>
+                <i class="fas fa-chevron-down arrow"></i>
+            </div>
+            <div class="submenu" id="sales">
+                <div class="nav-item">Customers</div>
+                <div class="nav-item">Retainer Invoices</div>
+                <div class="nav-item">Sales Orders</div>
+                <div class="nav-item">Packages</div>
+                <div class="nav-item">Shipments</div>
+                <div class="nav-item">Delivery Challans</div>
+                <div class="nav-item">Invoices</div>
+                <div class="nav-item">Payments Received</div>
+                <div class="nav-item">Sales Returns</div>
+                <div class="nav-item">Credit Notes</div>
+            </div>
+
+            <div class="nav-item" data-submenu="purchases">
+                <i class="fas fa-shopping-bag"></i>
+                <span>Purchases</span>
+                <i class="fas fa-chevron-down arrow"></i>
+            </div>
+            <div class="submenu" id="purchases">
+                <div class="nav-item">Vendors</div>
+                <div class="nav-item">Purchase Orders</div>
+                <div class="nav-item">Purchase Receives</div>
+                <div class="nav-item">Bills</div>
+                <div class="nav-item">Payments Made</div>
+                <div class="nav-item">Vendor Credits</div>
+            </div>
+
+            <div class="nav-item">
+                <i class="fas fa-plug"></i>
+                <span>Integrations</span>
+            </div>
+
+            <div class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>Reports</span>
+            </div>
+            <!-- <div class="nav-item back-link" style="margin-top: 205px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                <i class="fas fa-arrow-left"></i>
+                <a href="{{ url_for('home') }}" style="color: inherit; text-decoration: none;">Back to homepage</a>
+            </div> -->
+        </nav>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <div class="search-container">
+                        <img src="../static/images/search.png" alt="Search" width="16" height="16">
+                        <input type="text" placeholder="Search in Items ( / )">
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <button class="icon-button primary">
+                        <p style="transform: scale(2); color: white; font-weight: 200; margin-bottom: 3.2px;">+</p>
+                    </button>
+                    <button class="icon-button">
+                        <img src="../static/images/know_people.png" alt="Profile" width="20" height="20">
+                    </button>
+                    <button class="icon-button">
+                        <img src="../static/images/bell.png" alt="Notifications" width="20" height="20">
+                    </button>
+                    <button class="icon-button">
+                        <img src="../static/images/SETTINGS.png" alt="Settings" width="20" height="20">
+                    </button>
+                    <button class="icon-button">
+                        <a href="{{url_for('profile')}}"><img src="../static/images/profile.png" alt="Menu" width="20"
+                                height="20"></a>
+                    </button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <div class="page-header">
+                    <p>All Item Groups </p>
+                </div>
+
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-content">
+                            <h2>Item groups</h2>
+                            <img src="../static/images/t-shirt_group.png" alt="Item Groups" class="card-icon" width="64"
+                                height="64" style="width: 82px;">
+                            <p>Create multiple variants of the same item using Item Groups</p>
+                            <a href="{{url_for('groups')}}"><button class="button primary">New Item Group</button></a>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-content">
+                            <h2>Items</h2>
+                            <img src="../static/images/tshirt.png" alt="Items" class="card-icon" width="64" height="64"
+                                style="width: 80px;">
+                            <p>Create standalone items and services that you buy and sell</p>
+                            <a href="{{url_for('item_form')}}"><button class="button primary">New Item</button></a>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-content">
+                            <h2>Composite Items</h2>
+                            <img src="../static/images/composite.png" alt="Composite Items" class="card-icon" width="64"
+                                height="64" style="width: 82px;">
+                            <p>Bundle different items together and sell them as kits</p>
+                            <button class="button primary">New Composite Item</button>
+                        </div>
+                    </div>
+
+
+                    <div class="card">
+                        <div class="card-content">
+                            <h2>Price Lists</h2>
+                            <img src="../static/images/price_list.png" alt="Price Lists" class="card-icon" width="64"
+                                height="64">
+                            <p>Tweak your item prices for specific contacts or transactions</p>
+                            <button class="button primary">New Price List</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuItems = document.querySelectorAll('.nav-item[data-submenu]');
+
+            menuItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    const submenuId = this.getAttribute('data-submenu');
+                    const submenu = document.getElementById(submenuId);
+                    const wasOpen = this.classList.contains('open');
+
+                    document.querySelectorAll('.submenu').forEach(sub => {
+                        sub.classList.remove('open');
+                    });
+                    document.querySelectorAll('.nav-item[data-submenu]').forEach(navItem => {
+                        navItem.classList.remove('open');
+                    });
+
+                    if (!wasOpen) {
+                        submenu.classList.add('open');
+                        this.classList.add('open');
+                    }
+                });
+            });
+
+            const navItems = document.querySelectorAll('.nav-item:not([data-submenu])');
+            navItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    document.querySelectorAll('.nav-item').forEach(navItem => {
+                        navItem.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+
+            const itemGroupForm = document.querySelector('.item-group-form');
+            if (itemGroupForm) {
+                itemGroupForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    console.log('Form submitted');
+                });
+
+                const addAttributeBtn = document.querySelector('.button-link');
+                const attributesSection = document.querySelector('.attributes-section');
+
+                if (addAttributeBtn && attributesSection) {
+                    addAttributeBtn.addEventListener('click', function () {
+                        const newRow = document.createElement('div');
+                        newRow.className = 'attribute-row';
+                        newRow.innerHTML = `
+                        <div class="form-section">
+                            <label class="form-label required">Attribute</label>
+                            <select class="form-select">
+                                <option>e.g: color</option>
+                            </select>
+                        </div>
+                        <div class="form-section">
+                            <label class="form-label required">Options</label>
+                            <input type="text" class="form-input">
+                        </div>
+                        <button class="icon-button delete">
+                            <img src="/placeholder.svg" alt="Delete" width="20" height="20">
+                        </button>
+                    `;
+                        attributesSection.appendChild(newRow);
+                    });
+                }
+            }
+        });
+
+const menuToggle = document.querySelector('.icon-button:last-child');
+const sidebar = document.querySelector('.sidebar');
+const mainContent = document.querySelector('.main-content');
+
+menuToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    mainContent.classList.toggle('sidebar-open');
+});
+
+document.addEventListener('click', (e) => {
+    if (window.innerWidth <= 768 && 
+        !sidebar.contains(e.target) && 
+        !menuToggle.contains(e.target) && 
+        sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        mainContent.classList.remove('sidebar-open');
+    }
+});
+    </script>
+</body>
+
+</html>

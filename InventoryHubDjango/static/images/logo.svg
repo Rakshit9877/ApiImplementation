@@ -1,0 +1,4 @@
+<svg width="300" height="100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="100" fill="#ffffff" rx="10" ry="10" stroke="#c61b37" stroke-width="2"/>
+  <text x="150" y="60" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="bold" fill="#c61b37" text-anchor="middle">InventoryHub</text>
+</svg> 

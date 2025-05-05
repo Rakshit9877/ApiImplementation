@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Inventory Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-red: #E42527;
+            --primary-yellow: #F8B21D;
+            --primary-black: #000000;
+            --red-light: #f47275;
+            --yellow-light: #fac668;
+            --text-dark: #1a1a1a;
+            --bg-light: #FAFAFA;
+        }
+
+        .bg-primary {
+            background-color: var(--primary-red);
+        }
+
+        .bg-secondary {
+            background-color: var(--primary-yellow);
+        }
+
+        .bg-dark {
+            background-color: var(--primary-black);
+        }
+
+        .text-primary {
+            color: var(--primary-red);
+        }
+
+        .text-secondary {
+            color: var(--primary-yellow);
+        }
+
+        .hover\:bg-primary:hover {
+            background-color: var(--primary-red);
+        }
+
+        .hover\:bg-secondary:hover {
+            background-color: var(--primary-yellow);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary-black), var(--primary-red));
+        }
+
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .team-card img {
+            transition: transform 0.3s ease;
+        }
+
+        .team-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-red);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-yellow);
+            color: var(--primary-black);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="gradient-bg text-white">
+        <div class="container mx-auto px-4 py-24">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-5xl font-bold mb-6 leading-tight">Transforming Inventory Management</h1>
+                <p class="text-xl leading-relaxed opacity-90">We're on a mission to simplify inventory management for businesses of all sizes. Our cloud-based solution helps you track, manage, and optimize your inventory with ease.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-20">
+        <div class="mb-20 max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl font-bold mb-8 text-primary-black">Our Story</h2>
+            <p class="text-gray-800 text-lg leading-relaxed">
+                Founded in 2024, our journey began when we recognized the challenges businesses face with traditional inventory management systems. We set out to create a solution that combines powerful features with simplicity, making inventory management accessible to everyone.
+            </p>
+        </div>
+
+        <div class="mb-20">
+            <h2 class="text-4xl font-bold mb-12 text-center text-primary-black">Meet Our Team</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="team-card bg-white rounded-xl shadow-lg p-8 card-hover">
+                    
+                    <div class="overflow-hidden rounded-xl mb-6">
+                        <img src="../static/images/rudar.jpeg" alt="Rudar" class="rounded-xl mx-auto">
+                    </div>
+                    <h3 class="text-2xl font-bold text-center mb-2 text-primary-black">Rudar</h3>
+                    <p class="text-primary text-lg font-semibold text-center mb-4">Team Lead</p>
+                    <p class="text-gray-700 text-center">Leading our team with vision and strategy, ensuring we deliver excellence in every aspect of our product.</p>
+                </div>
+
+                <div class="team-card bg-white rounded-xl shadow-lg p-8 card-hover">
+                    <!-- <div class="overflow-hidden rounded-full mb-6">
+                        <img src="../static/images/ravish.jpeg" alt="Ravish" class="rounded-full mx-auto">
+                    </div> -->
+                    <div class="overflow-hidden rounded-xl mb-6">
+                        <img src="../static/images/ravish.jpeg" alt="Rudar" class="rounded-xl mx-auto">
+                    </div>
+                    <h3 class="text-2xl font-bold text-center mb-2 text-primary-black">Ravish</h3>
+                    <p class="text-primary text-lg font-semibold text-center mb-4">Technical Architect</p>
+                    <p class="text-gray-700 text-center">Driving innovation through robust architecture and cutting-edge technology implementation.</p>
+                </div>
+
+                <div class="team-card bg-white rounded-xl shadow-lg p-8 card-hover">
+                    <!-- <div class="overflow-hidden rounded-full mb-6">
+                        <img src="../static/images/rakshit2.jpeg" alt="Rakshit" class="rounded-full mx-auto">
+                    </div> -->
+
+                    <div class="overflow-hidden rounded-xl mb-6">
+                        <img src="../static/images/rakshit2.jpeg" alt="Rudar" class="rounded-xl mx-auto">
+                    </div>
+                    <h3 class="text-2xl font-bold text-center mb-2 text-primary-black">Rakshit</h3>
+                    <p class="text-primary text-lg font-semibold text-center mb-4">Technical Architect</p>
+                    <p class="text-gray-700 text-center">Fostering innovation through strong infrastructure and advanced technology integration..</p>
+                </div>
+
+                <div class="team-card bg-white rounded-xl shadow-lg p-8 card-hover">
+                    <!-- <div class="overflow-hidden rounded-full mb-6">
+                        <img src="../static/images/raman.jpeg" alt="Raman" class="rounded-full mx-auto">
+                    </div> -->
+
+                    <div class="overflow-hidden rounded-xl mb-6">
+                        <img src="../static/images/raman.jpeg" alt="Rudar" class="rounded-xl mx-auto">
+                    </div>
+                    <h3 class="text-2xl font-bold text-center mb-2 text-primary-black">Raman</h3>
+                    <p class="text-primary text-lg font-semibold text-center mb-4">Technical Architect</p>
+                    <p class="text-gray-700 text-center">Propelling innovation with a strong framework and the implementation of cutting-edge technology.</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="mb-20">
+            <h2 class="text-4xl font-bold mb-12 text-center text-primary-black">Why Choose Us?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-lg card-hover border-t-4 border-primary">
+                    <h3 class="text-2xl font-bold mb-4 text-primary-black">Cloud-Based Solution</h3>
+                    <p class="text-gray-700 leading-relaxed">Access your inventory data anywhere, anytime. Our cloud-based system ensures your data is always secure and up-to-date.</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg card-hover border-t-4 border-secondary">
+                    <h3 class="text-2xl font-bold mb-4 text-primary-black">Real-Time Analytics</h3>
+                    <p class="text-gray-700 leading-relaxed">Make informed decisions with real-time insights into your inventory levels, sales trends, and more.</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg card-hover border-t-4 border-dark">
+                    <h3 class="text-2xl font-bold mb-4 text-primary-black">24/7 Support</h3>
+                    <p class="text-gray-700 leading-relaxed">Our dedicated support team is always ready to help you get the most out of our platform.</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-dark rounded-xl p-12 text-center shadow-lg text-white">
+            <h2 class="text-4xl font-bold mb-6">Ready to Transform Your Inventory Management?</h2>
+            <p class="text-gray-200 text-lg mb-8">Join thousands of businesses who trust us with their inventory management needs.</p>
+            <button class="btn-primary text-white px-10 py-4 rounded-lg text-lg font-semibold transition-colors duration-300">
+                Get Started Today
+            </button>
+        </div>
+    </div>
+</body>
+</html>

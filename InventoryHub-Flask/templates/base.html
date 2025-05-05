@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Default Title{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            color: #ff4444;
+            text-decoration: none;
+            margin-right: 3rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            margin-right: 8px;
+        }
+
+        .nav-items {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-item {
+            position: relative;
+            padding: 0.5rem 0;
+            cursor: pointer;
+        }
+
+        .nav-link {
+            color: #333;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #ff4444;
+        }
+
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: -20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            min-width: 800px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .nav-item:hover .dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(10px);
+        }
+
+        .dropdown-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title i {
+            color: #ff4444;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.5rem 0;
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .dropdown-item:hover {
+            color: #ff4444;
+        }
+
+        .dropdown-description {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            margin-right: 8px;
+            color: #ff4444;
+        }
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            background-color: #1a1c23;
+            color: #ffffff;
+            padding: 20px 0;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 20px;
+            margin-bottom: 20px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            color: #a0aec0;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: #2d3748;
+            color: #ffffff;
+        }
+
+        .nav-item.active {
+            background-color: #3182ce;
+            color: #ffffff;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: #2d3748;
+        }
+
+        .submenu.open {
+            max-height: 1000px;
+            transition: max-height 0.5s ease-in;
+        }
+
+        .submenu .nav-item {
+            padding-left: 50px;
+            font-size: 14px;
+        }
+
+        .nav-item .arrow {
+            margin-left: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Custom scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #1a1c23;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #718096;
+        }
+
+
+        :root {
+            --primary-color: #E42527;
+            --text-light: #9ca3af;
+            --text-lighter: #d1d5db;
+            --border-color: #374151;
+            --bg-dark: #1c1c1c;
+            --bg-darker: #141414;
+            --bg-light: #2d2d2d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-darker);
+        }
+
+        .footer {
+            background: var(--bg-dark);
+            padding: 4rem 0 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .section h3 {
+            color: var(--text-lighter);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .section h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -8px;
+            width: 40px;
+            height: 2px;
+            background: var(--primary-color);
+        }
+
+        .links {
+            list-style: none;
+        }
+
+        .links li:not(:last-child) {
+            margin-bottom: 0.875rem;
+        }
+
+        .links a, .contact-item {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .links a:hover, .social-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .contact-section {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .newsletter {
+            flex: 1;
+            min-width: 200px;
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            height: fit-content;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .newsletter-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.95rem;
+            outline: none;
+            background: var(--bg-dark);
+            color: var(--text-lighter);
+        }
+
+        .newsletter-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .newsletter-input::placeholder {
+            color: var(--text-light);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .social-links a {
+            color: var(--text-light);
+            transition: color 0.2s;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+
+            .contact-section {
+                flex-direction: column;
+            }
+        }
+
+
+
+        /* Layout styles */
+        .main-container {
+            display: flex;
+        }
+        
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    {% block navbar %}
+    <nav class="navbar">
+        <a href="#" class="logo">
+            <svg class="logo-icon" viewBox="0 0 24 24" fill="currentColor">
+                <rect width="20" height="20" x="2" y="2" rx="2"/>
+                <path d="M6 6h12v2H6zM6 11h12v2H6zM6 16h8v2H6z" fill="white"/>
+            </svg>
+            <span>Zoho Inventory</span>
+        </a>
+        <ul class="nav-items">
+            <li class="nav-item">
+                <a href="#" class="nav-link">Features</a>
+                <div class="dropdown">
+                    <div class="dropdown-section">
+                        <div class="section-title">
+                            <i class="icon">📦</i>Purchasing
+                        </div>
+                        <a href="#" class="dropdown-item">Purchase orders</a>
+                        <a href="#" class="dropdown-item">Purchase receives</a>
+                        <a href="#" class="dropdown-item">Vendor payments</a>
+                    </div>
+                    <div class="dropdown-section">
+                        <div class="section-title">
+                            <i class="icon">🏭</i>Warehousing
+                        </div>
+                        <a href="#" class="dropdown-item">Multi-warehouse management</a>
+                        <a href="#" class="dropdown-item">Transfer orders</a>
+                        <a href="#" class="dropdown-item">Picklists</a>
+                        <a href="#" class="dropdown-item">Bin Locations</a>
+                    </div>
+                    <div class="dropdown-section">
+                        <div class="section-title">
+                            <i class="icon">🚚</i>Order fulfillment
+                        </div>
+                        <a href="#" class="dropdown-item">Backorders and Dropshipments</a>
+                        <a href="#" class="dropdown-item">Packaging and shipping</a>
+                        <a href="#" class="dropdown-item">Post-shipment tracking</a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Solutions</a>
+                <div class="dropdown">
+                    <div class="dropdown-section">
+                        <div class="section-title">
+                            <i class="icon">🏪</i>Industry
+                        </div>
+                        <a href="#" class="dropdown-item">Retail
+                            <div class="dropdown-description">Boost retail sales, reduce costs</div>
+                        </a>
+                        <a href="#" class="dropdown-item">Ecommerce
+                            <div class="dropdown-description">Sell across channels, sell smart</div>
+                        </a>
+                        <a href="#" class="dropdown-item">Manufacturing
+                            <div class="dropdown-description">Multiple stages, made easy</div>
+                        </a>
+                    </div>
+                    <div class="dropdown-section">
+                        <div class="section-title">
+                            <i class="icon">📊</i>Use Cases
+                        </div>
+                        <a href="#" class="dropdown-item">Inventory control
+                            <div class="dropdown-description">Manage and track items, end-to-end</div>
+                        </a>
+                        <a href="#" class="dropdown-item">Warehouse management
+                            <div class="dropdown-description">Control stock across locations</div>
+                        </a>
+                        <a href="#" class="dropdown-item">Multi-channel selling
+                            <div class="dropdown-description">Sync stock and streamline sales</div>
+                        </a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Integrations</a>
+                <div class="dropdown">
+                    <div class="dropdown-section">
+                        <div class="section-title">
+                            <i class="icon">🔌</i>Marketplace
+                        </div>
+                        <a href="#" class="dropdown-item">Shopping Cart</a>
+                        <a href="#" class="dropdown-item">Accounting</a>
+                        <a href="#" class="dropdown-item">Shipping</a>
+                        <a href="#" class="dropdown-item">Sales & Marketing</a>
+                    </div>
+                    <div class="dropdown-section">
+                        <div class="section-title">
+                            <i class="icon">🛍️</i>Platforms
+                        </div>
+                        <a href="#" class="dropdown-item">Amazon
+                            <div class="dropdown-description">Sync Amazon orders and update stock levels</div>
+                        </a>
+                        <a href="#" class="dropdown-item">Etsy
+                            <div class="dropdown-description">Streamline inventory levels and sync orders</div>
+                        </a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Resources</a>
+                <div class="dropdown">
+                    <div class="dropdown-section">
+                        <div class="section-title">
+                            <i class="icon">🤝</i>Connect
+                        </div>
+                        <a href="#" class="dropdown-item">Forums
+                            <div class="dropdown-description">Ask questions and get answers</div>
+                        </a>
+                        <a href="#" class="dropdown-item">Webinars
+                            <div class="dropdown-description">Stay updated on best practices</div>
+                        </a>
+                        <a href="#" class="dropdown-item">Partners
+                            <div class="dropdown-description">Find expert partners or become one</div>
+                        </a>
+                    </div>
+                    <div class="dropdown-section">
+                        <div class="section-title">
+                            <i class="icon">📚</i>Learn
+                        </div>
+                        <a href="#" class="dropdown-item">Guides
+                            <div class="dropdown-description">Get the latest information on inventory</div>
+                        </a>
+                        <a href="#" class="dropdown-item">Help documentation
+                            <div class="dropdown-description">Tips and tricks on using Zoho Inventory</div>
+                        </a>
+                        <a href="#" class="dropdown-item">FAQ
+                            <div class="dropdown-description">Answers to most asked questions</div>
+                        </a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Pricing</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Customers</a>
+            </li>
+        </ul>
+    </nav>
+    {% endblock %}
+
+    <div class="main-container">
+        {% block sidebar %}
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-boxes"></i>
+                <span>Inventory</span>
+            </div>
+    
+            <div class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </div>
+    
+            <div class="nav-item" data-submenu="inventory">
+                <i class="fas fa-box"></i>
+                <span>Inventory</span>
+                <i class="fas fa-chevron-down arrow"></i>
+            </div>
+            <div class="submenu" id="inventory">
+                <div class="nav-item">Items</div>
+                <div class="nav-item">Composite Items</div>
+                <div class="nav-item">Item Groups</div>
+                <div class="nav-item">Price Lists</div>
+                <div class="nav-item">Inventory Adjustments</div>
+            </div>
+    
+            <div class="nav-item" data-submenu="sales">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Sales</span>
+                <i class="fas fa-chevron-down arrow"></i>
+            </div>
+            <div class="submenu" id="sales">
+                <div class="nav-item">Customers</div>
+                <div class="nav-item">Retainer Invoices</div>
+                <div class="nav-item">Sales Orders</div>
+                <div class="nav-item">Packages</div>
+                <div class="nav-item">Shipments</div>
+                <div class="nav-item">Delivery Challans</div>
+                <div class="nav-item">Invoices</div>
+                <div class="nav-item">Payments Received</div>
+                <div class="nav-item">Sales Returns</div>
+                <div class="nav-item">Credit Notes</div>
+            </div>
+    
+            <div class="nav-item" data-submenu="purchases">
+                <i class="fas fa-shopping-bag"></i>
+                <span>Purchases</span>
+                <i class="fas fa-chevron-down arrow"></i>
+            </div>
+            <div class="submenu" id="purchases">
+                <div class="nav-item">Vendors</div>
+                <div class="nav-item">Purchase Orders</div>
+                <div class="nav-item">Purchase Receives</div>
+                <div class="nav-item">Bills</div>
+                <div class="nav-item">Payments Made</div>
+                <div class="nav-item">Vendor Credits</div>
+            </div>
+    
+            <div class="nav-item">
+                <i class="fas fa-plug"></i>
+                <span>Integrations</span>
+            </div>
+    
+            <div class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>Reports</span>
+            </div>
+        </div>
+        {% endblock %}
+
+        <div class="content-wrapper">
+            <main class="main-content">
+                {% block content %}
+                {% endblock %}
+            </main>
+
+            {% block footer %}
+            <footer class="footer">
+                <div class="container">
+                    <div class="grid">
+                        <div class="section">
+                            <h3>Solutions</h3>
+                            <ul class="links">
+                                <li><a href="#"><i class="fas fa-box"></i>Inventory Management</a></li>
+                                <li><a href="#"><i class="fas fa-truck"></i>Order Fulfillment</a></li>
+                                <li><a href="#"><i class="fas fa-warehouse"></i>Warehouse Management</a></li>
+                                <li><a href="#"><i class="fas fa-barcode"></i>Barcode Scanning</a></li>
+                                <li><a href="#"><i class="fas fa-chart-line"></i>Inventory Analytics</a></li>
+                            </ul>
+                        </div>
+        
+                        <div class="section">
+                            <h3>Resources</h3>
+                            <ul class="links">
+                                <li><a href="#"><i class="fas fa-book"></i>Documentation</a></li>
+                                <li><a href="#"><i class="fas fa-graduation-cap"></i>Learning Center</a></li>
+                                <li><a href="#"><i class="fas fa-play-circle"></i>Video Tutorials</a></li>
+                                <li><a href="#"><i class="fas fa-newspaper"></i>Blog</a></li>
+                                <li><a href="#"><i class="fas fa-file-alt"></i>API Documentation</a></li>
+                            </ul>
+                        </div>
+        
+                        <div class="section">
+                            <h3>Company</h3>
+                            <ul class="links">
+                                <li><a href="#"><i class="fas fa-info-circle"></i>About Us</a></li>
+                                <li><a href="#"><i class="fas fa-briefcase"></i>Careers</a></li>
+                                <li><a href="#"><i class="fas fa-shield-alt"></i>Security</a></li>
+                                <li><a href="#"><i class="fas fa-gavel"></i>Terms of Service</a></li>
+                                <li><a href="#"><i class="fas fa-user-shield"></i>Privacy Policy</a></li>
+                            </ul>
+                        </div>
+        
+                        <div class="section">
+                            <h3>Contact & Support</h3>
+                            <div class="contact-section">
+                                <div class="contact-info">
+                                    <div class="contact-list">
+                                        <div class="contact-item">
+                                            <i class="fas fa-phone"></i>
+                                            <span>+1 (888) 900-9646</span>
+                                        </div>
+                                        <div class="contact-item">
+                                            <i class="fas fa-envelope"></i>
+                                            <span>support@zohoinventory.com</span>
+                                        </div>
+                                        <div class="contact-item">
+                                            <i class="fas fa-clock"></i>
+                                            <span>24/7 Support Available</span>
+                                        </div>
+                                    </div>
+                                </div>
+        
+                                <div class="newsletter">
+                                    <h3>Stay Updated</h3>
+                                    <form class="newsletter-form" onsubmit="handleSubmit(event)">
+                                        <input type="email" class="newsletter-input" placeholder="Enter your email" required>
+                                        <button type="submit" class="btn">Subscribe</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="footer-bottom">
+                        <div class="copyright">©️ 2025 Zoho Inventory. All rights reserved.</div>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-facebook"></i></a>
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+            {% endblock %}
+        </div>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuItems = document.querySelectorAll('.nav-item[data-submenu]');
+            
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const submenuId = this.getAttribute('data-submenu');
+                    const submenu = document.getElementById(submenuId);
+                    const wasOpen = this.classList.contains('open');
+                    
+                    document.querySelectorAll('.submenu').forEach(sub => {
+                        sub.classList.remove('open');
+                    });
+                    document.querySelectorAll('.nav-item[data-submenu]').forEach(navItem => {
+                        navItem.classList.remove('open');
+                    });
+                    
+                    if (!wasOpen) {
+                        submenu.classList.add('open');
+                        this.classList.add('open');
+                    }
+                });
+            });
+
+            const navItems = document.querySelectorAll('.nav-item:not([data-submenu])');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.nav-item').forEach(navItem => {
+                        navItem.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+        });
+
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            const email = event.target.querySelector('input[type="email"]').value;
+            alert(`Thank you for subscribing with: ${email}`);
+            event.target.reset();
+        }
+    </script>
+</body>
+</html>

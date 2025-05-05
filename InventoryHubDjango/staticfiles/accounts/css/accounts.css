@@ -1,0 +1,192 @@
+/* Accounts App Specific Styling */
+:root {
+    --primary-color: #D32D3D;
+    --primary-hover: #c61b37;
+    --background: #F8F9FB;
+    --card-bg: #FFFFFF;
+    --border-color: #E5E7EB;
+    --text-primary: #111827;
+    --text-secondary: #6B7280;
+}
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--background);
+    padding: 2rem;
+}
+
+.auth-card {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-logo {
+    max-width: 120px;
+    margin-bottom: 1rem;
+}
+
+.auth-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.form-group input {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    font-size: 1rem;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(209, 43, 43, 0.1);
+}
+
+.auth-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.auth-button:hover {
+    background-color: var(--primary-hover);
+}
+
+.auth-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.auth-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.auth-errors {
+    background-color: #FEE2E2;
+    color: #DC2626;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1.5rem;
+}
+
+.auth-success {
+    background-color: #DCFCE7;
+    color: #16A34A;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1.5rem;
+}
+
+.profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.profile-info h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.profile-info p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.profile-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+}
+
+.profile-tab {
+    padding: 1rem 1.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.profile-tab.active {
+    border-bottom-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.profile-content {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+} 

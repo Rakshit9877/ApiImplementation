@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Confirm Delete - InventoryHub{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Confirm Delete</h1>
+    <div class="header-actions">
+        {% if item %}
+            <a href="{% url 'inventory:item_list' %}" class="button">
+                <span class="material-icons">arrow_back</span>
+                Back to Items
+            </a>
+        {% elif group %}
+            <a href="{% url 'inventory:group_list' %}" class="button">
+                <span class="material-icons">arrow_back</span>
+                Back to Groups
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card" style="max-width: 500px; margin: 0 auto; padding: 2rem; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <span class="material-icons" style="font-size: 3rem; color: #DC2626;">warning</span>
+        <h2 style="margin-top: 1rem; color: #DC2626;">Are you sure?</h2>
+    </div>
+    
+    {% if item %}
+        <p>Are you sure you want to delete the item "<strong>{{ item.name }}</strong>"?</p>
+        <p>This action cannot be undone and will remove all data associated with this item.</p>
+        
+        <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+            <a href="{% url 'inventory:item_list' %}" class="button">Cancel</a>
+            <form method="post" action="{% url 'inventory:delete_item' item.id %}">
+                {% csrf_token %}
+                <button type="submit" class="button primary" style="background-color: #DC2626;">Delete Item</button>
+            </form>
+        </div>
+    {% elif group %}
+        <p>Are you sure you want to delete the group "<strong>{{ group.name }}</strong>"?</p>
+        <p>This action cannot be undone and will remove all attributes associated with this group.</p>
+        
+        <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+            <a href="{% url 'inventory:group_list' %}" class="button">Cancel</a>
+            <form method="post" action="{% url 'inventory:delete_group' group.id %}">
+                {% csrf_token %}
+                <button type="submit" class="button primary" style="background-color: #DC2626;">Delete Group</button>
+            </form>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

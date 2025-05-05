@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 0.5rem;
+            margin: 0 1rem;
+            width: 300px;
+        }
+
+        .search-container input {
+            border: none;
+            background: transparent;
+            margin-left: 0.5rem;
+            width: 100%;
+            outline: none;
+        }
+
+        .org-selector {
+            margin-left: auto;
+            margin-right: 1rem;
+        }
+
+        .icon-button {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .new-button {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 1rem;
+        }
+
+        .content {
+            padding: 1rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        th {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .item-name {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        .item-image {
+            width: 40px;
+            height: 40px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-right: 1rem;
+        }
+
+        .name-cell {
+            display: flex;
+            align-items: center;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-right: 1rem;
+        }
+
+        .view-toggle button {
+            padding: 0.5rem;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .help-button {
+            background: #ff9800;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .summary-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            flex: 1;
+        }
+
+        .stat-card h3 {
+            color: #6c757d;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+    </style>
+    <style>
+        /* Previous styles remain the same */
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-button {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            font-size: 0.875rem;
+        }
+        
+        .edit-button {
+            background: #4285f4;
+            color: white;
+        }
+        
+        .delete-button {
+            background: #dc3545;
+            color: white;
+        }
+        /* Add these media queries after your existing styles */
+
+/* For tablets and smaller desktops */
+@media screen and (max-width: 1024px) {
+    .summary-stats {
+        flex-wrap: wrap;
+    }
+    
+    .stat-card {
+        min-width: calc(50% - 1rem);
+        flex: 1 1 calc(50% - 1rem);
+    }
+    
+    .search-container {
+        width: 200px;
+    }
+}
+
+/* For mobile devices */
+@media screen and (max-width: 768px) {
+    .navbar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0.5rem;
+    }
+    
+    .search-container {
+        order: 2;
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+    
+    .org-selector {
+        order: 1;
+        margin-right: auto;
+    }
+    
+    .icon-button, .new-button {
+        order: 3;
+    }
+    
+    .summary-stats {
+        flex-direction: column;
+    }
+    
+    .stat-card {
+        width: 100%;
+    }
+    
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .view-toggle {
+        margin-left: auto;
+    }
+    
+    /* Make table responsive */
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    table {
+        min-width: 800px; /* Ensure minimum width for scrolling */
+    }
+    
+    /* Stack form fields in modal */
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    .modal-content {
+        padding: 1rem;
+    }
+}
+
+/* For very small devices */
+@media screen and (max-width: 480px) {
+    .name-cell {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .item-image {
+        margin-bottom: 0.5rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .action-button {
+        width: 100%;
+    }
+    
+    .header > div {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .new-button {
+        margin-right: 0;
+    }
+}
+
+/* Improve modal responsiveness */
+@media screen and (max-width: 576px) {
+    .modal-dialog {
+        margin: 0;
+        max-width: 100%;
+        min-height: 100vh;
+    }
+    
+    .modal-content {
+        border-radius: 0;
+        min-height: 100vh;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <button class="icon-button">↻</button>
+        <div class="search-container">
+            <span>🔍</span>
+            <input type="text" placeholder="Search in Items ( / )">
+        </div>
+        <div class="org-selector"></div>
+        <a href="{{ url_for('item_form') }}" class="new-button" style="text-decoration: none;">＋</a>
+        <button class="icon-button">👤</button>
+        <button class="icon-button">🔔</button>
+        <button class="icon-button">⚙️</button>
+    </nav>
+
+    <div class="content">
+        <div class="summary-stats">
+            <div class="stat-card">
+                <h3>TOTAL ITEMS</h3>
+                <p>{{ total_items }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>TOTAL VALUE</h3>
+                <p>Rs.{{ "%.2f"|format(total_value) }}</p>
+            </div>
+            {% for type, count in item_types.items() %}
+            <div class="stat-card">
+                <h3>{{ type|upper }}</h3>
+                <p>{{ count }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="header">
+            <h2>All Items ▾</h2>
+            <div style="display: flex; align-items: center;">
+                <a href="{{ url_for('item_form') }}" class="new-button" style="text-decoration: none;">＋ New</a>
+                <div class="view-toggle">
+                    <button>☰</button>
+                    <button>⊞</button>
+                </div>
+                <button class="help-button">?</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th><input type="checkbox"></th>
+                        <th>NAME</th>
+                        <th>SKU</th>
+                        <th>UNIT</th>
+                        <th>QTY IN HAND</th>
+                        <th>SELLING PRICE</th>
+                        <th>STATUS</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>
+                            <div class="name-cell">
+                                <div class="item-image"></div>
+                                <a href="#" class="item-name">{{ item.name }}</a>
+                            </div>
+                        </td>
+                        <td>{{ item.sku }}</td>
+                        <td>{{ item.unit }}</td>
+                        <td>{{ item.quantity_in_hand }}</td>
+                        <td>Rs.{{ "%.2f"|format(item.selling_price) }}</td>
+                        <td>
+                            {% if item.quantity_in_hand <= item.reorder_point %}
+                                <span style="color: #dc3545;">Low Stock</span>
+                            {% elif item.quantity_in_hand == 0 %}
+                                <span style="color: #dc3545;">Out of Stock</span>
+                            {% else %}
+                                <span style="color: #28a745;">In Stock</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-button edit-button" 
+                                        onclick="openEditModal({{ item.id }}, '{{ item.name }}', '{{ item.sku }}', 
+                                        '{{ item.unit }}', {{ item.quantity_in_hand }}, {{ item.reorder_point }}, 
+                                        {{ item.selling_price }}, {{ item.cost_price or 'null' }}, 
+                                        {{ item.tax_rate or 'null' }}, {{ 'true' if item.returnable else 'false' }})">
+                                    Edit
+                                </button>   
+                                <button class="action-button delete-button" 
+                                        onclick="confirmDelete({{ item.id }}, '{{ item.name }}')">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+ 
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" name="name" id="editName">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">SKU</label>
+                            <input type="text" class="form-control" name="sku" id="editSku">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Unit</label>
+                            <input type="text" class="form-control" name="unit" id="editUnit">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quantity in Hand</label>
+                            <input type="number" class="form-control" name="quantity_in_hand" id="editQuantity">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Reorder Point</label>
+                            <input type="number" class="form-control" name="reorder_point" id="editReorderPoint">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Selling Price</label>
+                            <input type="number" step="0.01" class="form-control" name="selling_price" id="editSellingPrice">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Cost Price</label>
+                            <input type="number" step="0.01" class="form-control" name="cost_price" id="editCostPrice">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tax Rate (%)</label>
+                            <input type="number" step="0.01" class="form-control" name="tax_rate" id="editTaxRate">
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" name="returnable" id="editReturnable">
+                            <label class="form-check-label">Returnable</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEdit()">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete <span id="deleteItemName"></span>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form id="deleteForm" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="position: fixed; bottom: 20px; left: 20px;">
+        <a href="{{url_for('home')}}" class="btn btn-secondary">Back to homepage</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+                e.preventDefault();
+                document.querySelector('.search-container input').focus();
+            }
+        });
+        
+        function openEditModal(id, name, sku, unit, qty, reorderPoint, sellingPrice, costPrice, taxRate, returnable) {
+            document.getElementById('editForm').action = `/items/update/${id}`;
+            document.getElementById('editName').value = name;
+            document.getElementById('editSku').value = sku;
+            document.getElementById('editUnit').value = unit;
+            document.getElementById('editQuantity').value = qty;
+            document.getElementById('editReorderPoint').value = reorderPoint;
+            document.getElementById('editSellingPrice').value = sellingPrice;
+            document.getElementById('editCostPrice').value = costPrice || '';
+            document.getElementById('editTaxRate').value = taxRate || '';
+            document.getElementById('editReturnable').checked = returnable;
+            editModal.show();
+        }
+        
+        function submitEdit() {
+            document.getElementById('editForm').submit();
+        }
+        
+        function confirmDelete(id, name) {
+            document.getElementById('deleteForm').action = `/items/delete/${id}`;
+            document.getElementById('deleteItemName').textContent = name;
+            deleteModal.show();
+        }
+    </script>
+</body>
+</html>

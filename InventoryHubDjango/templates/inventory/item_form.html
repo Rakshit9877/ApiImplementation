@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if item %}Edit Item{% else %}Add Item{% endif %} - InventoryHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+<style>
+    .main-content {
+        display: flex;
+        min-height: 100vh;
+        margin-top: 0;
+        padding-top: 0;
+        position: relative;
+    }
+    
+    .content-wrapper {
+        flex: 1;
+        padding: 20px;
+        margin-left: 260px;
+    }
+    
+    .btn-profile {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    
+    .btn-profile.btn-primary {
+        background-color: #c61b37;
+        color: white;
+        border: none;
+    }
+    
+    .btn-profile.btn-primary:hover {
+        background-color: #931129;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-profile.btn-secondary {
+        background-color: #e2e8f0;
+        color: #4a5568;
+        border: none;
+    }
+    
+    .btn-profile.btn-secondary:hover {
+        background-color: #cbd5e0;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    {% include 'components/sidebar.html' %}
+    
+    <div class="content-wrapper">
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <h1>{% if item %}Edit Item{% else %}Add New Item{% endif %}</h1>
+                <p>{% if item %}Update the details of {{ item.name }}{% else %}Create a new inventory item{% endif %}</p>
+            </div>
+            <div>
+                <a href="{% url 'inventory:item_list' %}" class="btn-profile btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Items
+                </a>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <form method="post" action="{% if item %}{% url 'inventory:update_item' item.id %}{% else %}{% url 'inventory:add_item' %}{% endif %}">
+                {% csrf_token %}
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label required" for="id_name">Item Name</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                            <div class="error-message">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="id_sku">SKU</label>
+                            {{ form.sku }}
+                            {% if form.sku.errors %}
+                            <div class="error-message">{{ form.sku.errors }}</div>
+                            {% endif %}
+                            <div class="help-text">Unique identifier for this item</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label required" for="id_unit">Unit</label>
+                            <div class="select-wrapper">
+                                {{ form.unit }}
+                            </div>
+                            {% if form.unit.errors %}
+                            <div class="error-message">{{ form.unit.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-group">
+                            <div class="checkbox-wrapper">
+                                {{ form.returnable }}
+                                <label for="id_returnable">Returnable Item</label>
+                            </div>
+                            {% if form.returnable.errors %}
+                            <div class="error-message">{{ form.returnable.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="id_selling_price">Selling Price</label>
+                            {{ form.selling_price }}
+                            {% if form.selling_price.errors %}
+                            <div class="error-message">{{ form.selling_price.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="id_cost_price">Cost Price</label>
+                            {{ form.cost_price }}
+                            {% if form.cost_price.errors %}
+                            <div class="error-message">{{ form.cost_price.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="id_tax_rate">Tax Rate (%)</label>
+                            {{ form.tax_rate }}
+                            {% if form.tax_rate.errors %}
+                            <div class="error-message">{{ form.tax_rate.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="id_quantity_in_hand">Quantity in Hand</label>
+                            {{ form.quantity_in_hand }}
+                            {% if form.quantity_in_hand.errors %}
+                            <div class="error-message">{{ form.quantity_in_hand.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="id_quantity_to_receive">Quantity to Receive</label>
+                            {{ form.quantity_to_receive }}
+                            {% if form.quantity_to_receive.errors %}
+                            <div class="error-message">{{ form.quantity_to_receive.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="id_reorder_point">Reorder Point</label>
+                            {{ form.reorder_point }}
+                            {% if form.reorder_point.errors %}
+                            <div class="error-message">{{ form.reorder_point.errors }}</div>
+                            {% endif %}
+                            <div class="help-text">Minimum stock level before reordering</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <a href="{% url 'inventory:item_list' %}" class="btn-form btn-secondary">Cancel</a>
+                    <button type="submit" class="btn-form btn-primary">
+                        <i class="fas {% if item %}fa-save{% else %}fa-plus{% endif %}"></i>
+                        {% if item %}Update Item{% else %}Add Item{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - InventoryHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    {% include 'components/sidebar.html' %}
+    
+    <main class="admin-main">
+        <div class="admin-header">
+            <div>
+                <h1>Admin Dashboard</h1>
+                <p>Monitor and manage your system's performance</p>
+            </div>
+            <div class="last-update">
+                Last updated: <span id="updateTime">Just now</span>
+            </div>
+        </div>
+
+        <!-- Key Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card" id="totalUsersCard">
+                <div class="stat-icon" style="background: var(--primary-color)">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Total Users</h3>
+                    <p>{{ total_users }}</p>
+                </div>
+            </div>
+            
+            <div class="stat-card" id="adminUsersCard">
+                <div class="stat-icon" style="background: var(--success-color)">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Admin Users</h3>
+                    <p>{{ admin_users }}</p>
+                </div>
+            </div>
+            
+            <div class="stat-card" id="regularUsersCard">
+                <div class="stat-icon" style="background: var(--info-color)">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Regular Users</h3>
+                    <p>{{ regular_users }}</p>
+                </div>
+            </div>
+            
+            <div class="stat-card" id="inventoryValueCard">
+                <div class="stat-icon" style="background: var(--warning-color)">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Inventory Value</h3>
+                    <p>₹{{ total_inventory_value|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Stock Alerts Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h4>Stock Alerts</h4>
+                    <button class="refresh-btn" onclick="refreshStockAlerts()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div class="card-body" id="stockAlerts">
+                    <div class="alert-stats">
+                        <div class="alert-item">
+                            <span class="alert-badge danger">{{ out_of_stock_items }}</span>
+                            <p>Out of Stock Items</p>
+                        </div>
+                        <div class="alert-item">
+                            <span class="alert-badge warning">{{ low_stock_items }}</span>
+                            <p>Low Stock Items</p>
+                        </div>
+                        <div class="alert-item">
+                            <span class="alert-badge info">{{ total_items }}</span>
+                            <p>Total Items</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h4>Recent Activity</h4>
+                    <button class="refresh-btn" onclick="refreshActivity()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive" id="recentActivityTable">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Last Login</th>
+                                    <th>Country</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in recent_users %}
+                                <tr>
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="user-avatar">{{ user.username|first|upper }}</div>
+                                            <span>{{ user.username }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ user.last_login }}</td>
+                                    <td>{{ user.country }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- High Value Items Card -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h4>High Value Items</h4>
+                <button class="refresh-btn" onclick="refreshHighValueItems()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive" id="highValueTable">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Cost Price</th>
+                                <th>Quantity</th>
+                                <th>Total Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in high_value_items %}
+                            <tr>
+                                <td>{{ item.name }}</td>
+                                <td>₹{{ item.cost_price|floatformat:2 }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>₹{{ item.total_value|floatformat:2 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Management Card -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h4>User Management</h4>
+                <div class="card-actions">
+                    <a href="{% url 'admin_dashboard:user_management' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-users"></i> View All
+                    </a>
+                    <button class="refresh-btn" onclick="refreshUserTable()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive" id="userManagementTable">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in recent_users %}
+                            <tr>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-avatar">{{ user.username|first|upper }}</div>
+                                        <span>{{ user.username }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    <span class="badge {% if user.is_staff %}bg-success{% else %}bg-secondary{% endif %}">
+                                        {% if user.is_staff %}Admin{% else %}User{% endif %}
+                                    </span>
+                                </td>
+                                <td>{{ user.last_login }}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="#" class="btn btn-sm btn-outline-primary" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        updateLastUpdateTime();
+        initializeTooltips();
+        
+        // Add event listeners for card hover effects
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('mouseover', function() {
+                this.classList.add('hover');
+            });
+
+            card.addEventListener('mouseout', function() {
+                this.classList.remove('hover');
+            });
+        });
+    });
+
+    function initializeTooltips() {
+        // If using Bootstrap, initialize tooltips
+        if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+    }
+
+    function refreshStockAlerts() {
+        const alertsDiv = document.getElementById('stockAlerts');
+        applyLoadingState(alertsDiv);
+    }
+
+    function refreshActivity() {
+        const activityTable = document.getElementById('recentActivityTable');
+        applyLoadingState(activityTable);
+    }
+
+    function refreshHighValueItems() {
+        const itemsTable = document.getElementById('highValueTable');
+        applyLoadingState(itemsTable);
+    }
+
+    function refreshUserTable() {
+        const userTable = document.getElementById('userManagementTable');
+        applyLoadingState(userTable);
+    }
+
+    function applyLoadingState(element) {
+        // Add loading class to element
+        element.classList.add('loading');
+        
+        // In a real application, this would make an AJAX request to refresh data
+        // For demonstration purposes, we're just simulating a loading state
+        setTimeout(() => {
+            element.classList.remove('loading');
+            updateLastUpdateTime();
+        }, 1000);
+    }
+
+    function updateLastUpdateTime() {
+        const now = new Date();
+        const formattedDate = now.toLocaleString('en-US', { 
+            day: 'numeric', 
+            month: 'short', 
+            year: 'numeric',
+            hour: '2-digit', 
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        
+        document.getElementById('updateTime').textContent = formattedDate;
+    }
+</script>
+{% endblock %}

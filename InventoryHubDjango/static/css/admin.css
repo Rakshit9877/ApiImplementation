@@ -1,0 +1,216 @@
+:root {
+  --primary-color: #4361ee;
+  --secondary-color: #3f37c9;
+  --success-color: #2ecc71;
+  --warning-color: #f1c40f;
+  --danger-color: #e74c3c;
+  --gray-100: #f8f9fa;
+  --gray-200: #e9ecef;
+  --gray-300: #dee2e6;
+  --gray-600: #6c757d;
+  --gray-800: #343a40;
+}
+
+/* Layout */
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--gray-100);
+}
+
+.admin-main {
+  flex: 1;
+  padding: 2rem;
+  margin-left: 260px;
+}
+
+/* Header Section */
+.admin-header {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+.admin-header h1 {
+  font-size: 2rem;
+  color: var(--gray-800);
+  margin: 0;
+}
+
+.admin-header p {
+  color: var(--gray-600);
+  margin: 0.5rem 0 0;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  color: white;
+  font-size: 1.5rem;
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--gray-800);
+}
+
+/* Tables */
+.table {
+  margin: 0;
+}
+
+.table th {
+  background: var(--gray-100);
+  font-weight: 600;
+  color: var(--gray-800);
+  padding: 1rem 1.5rem;
+  border-bottom-width: 1px;
+}
+
+.table td {
+  padding: 1rem 1.5rem;
+  vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+  background: rgba(67, 97, 238, 0.04);
+}
+
+/* User Management Specific */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background: var(--primary-color);
+  border-radius: 10px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.user-details .name {
+  font-weight: 500;
+  color: var(--gray-800);
+}
+
+.user-details .email {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+/* Badges and Status */
+.badge {
+  padding: 0.5em 1em;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.badge-admin { background: var(--primary-color); color: white; }
+.badge-staff { background: var(--success-color); color: white; }
+.badge-user { background: var(--gray-600); color: white; }
+
+/* Forms */
+.admin-form {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.form-control {
+  border-radius: 8px;
+  border: 1px solid var(--gray-300);
+  padding: 0.75rem 1rem;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+/* Buttons */
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: var(--secondary-color);
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-main {
+    margin-left: 0;
+    padding: 1rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .admin-header {
+    padding: 1.5rem;
+  }
+}

@@ -1,0 +1,380 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About - InventoryHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #c61b37;
+        --secondary-color: #0F244E;
+        --accent-color: #00A8F5;
+        --light-bg: #f8f9fa;
+        --dark-text: #333333;
+        --light-text: #6c757d;
+    }
+    
+    .about-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 5rem 0;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .about-header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .about-header p {
+        font-size: 1.25rem;
+        max-width: 800px;
+        margin: 0 auto;
+        opacity: 0.9;
+    }
+    
+    .about-section {
+        padding: 5rem 0;
+    }
+    
+    .about-section h2 {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: var(--secondary-color);
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .about-card {
+        background: white;
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .about-card:hover {
+        transform: translateY(-10px);
+    }
+    
+    .about-card h3 {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .about-card p {
+        color: var(--light-text);
+        line-height: 1.7;
+    }
+    
+    .icon-box {
+        width: 70px;
+        height: 70px;
+        background: var(--light-bg);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .icon-box i {
+        font-size: 2rem;
+        color: var(--primary-color);
+    }
+    
+    .team-section {
+        background-color: var(--light-bg);
+        padding: 5rem 0;
+    }
+    
+    .team-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+    
+    .team-card:hover {
+        transform: translateY(-10px);
+    }
+    
+    .team-img {
+        width: 100%;
+        height: 280px;
+        object-fit: cover;
+    }
+    
+    .team-info {
+        padding: 1.5rem;
+    }
+    
+    .team-info h3 {
+        color: var(--secondary-color);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .team-info p {
+        color: var(--light-text);
+        margin-bottom: 1rem;
+    }
+    
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .social-links a {
+        width: 40px;
+        height: 40px;
+        background: var(--light-bg);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--dark-text);
+        transition: all 0.3s ease;
+    }
+    
+    .social-links a:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+    
+    .contact-section {
+        padding: 5rem 0;
+    }
+    
+    .contact-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .contact-info i {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-right: 1rem;
+        width: 40px;
+    }
+    
+    .contact-form input,
+    .contact-form textarea {
+        background: var(--light-bg);
+        border: none;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        width: 100%;
+        border-radius: 5px;
+    }
+    
+    .contact-form button {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+    
+    .contact-form button:hover {
+        background: var(--secondary-color);
+    }
+    
+    @media (max-width: 768px) {
+        .about-header {
+            padding: 3rem 0;
+        }
+        
+        .about-header h1 {
+            font-size: 2rem;
+        }
+        
+        .about-section, .team-section, .contact-section {
+            padding: 3rem 0;
+        }
+        
+        .about-section h2,
+        .team-section h2,
+        .contact-section h2 {
+            font-size: 2rem;
+        }
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <header class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary">About InventoryHub</h1>
+        <p class="lead">Streamlining inventory management for businesses of all sizes</p>
+    </header>
+
+    <!-- Mission Section -->
+    <section class="mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="card-title text-center mb-4">Our Mission</h2>
+                        <p class="card-text">
+                            At InventoryHub, our mission is to provide businesses with a powerful yet simple inventory management system that helps track products, manage stock levels, and optimize inventory operations. We strive to make inventory management accessible, efficient, and stress-free.
+                        </p>
+                        <p class="card-text">
+                            Our platform is designed with the following core principles:
+                        </p>
+                        <div class="row mt-4">
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 hover-scale">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-bolt text-primary fa-3x mb-3"></i>
+                                        <h5 class="card-title">Efficiency</h5>
+                                        <p class="card-text small">Streamlining inventory processes to save time and resources</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 hover-scale">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-chart-line text-primary fa-3x mb-3"></i>
+                                        <h5 class="card-title">Insights</h5>
+                                        <p class="card-text small">Providing valuable data to inform business decisions</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 hover-scale">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-shield-alt text-primary fa-3x mb-3"></i>
+                                        <h5 class="card-title">Reliability</h5>
+                                        <p class="card-text small">Building a system you can count on, day in and day out</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Our Team</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-4 mb-4">
+                <div class="card text-center h-100 border-0 shadow-sm hover-scale">
+                    <div class="card-body p-4">
+                        <img src="{% static 'images/team1.svg' %}" alt="Team Member 1" class="rounded-circle mb-3" width="150" height="150">
+                        <h4 class="card-title">John Doe</h4>
+                        <p class="card-text text-muted">Founder & CEO</p>
+                        <p class="card-text small">John has over 15 years of experience in supply chain management and software development.</p>
+                        <div class="social-icons mt-3">
+                            <a href="#" class="text-decoration-none me-2"><i class="fab fa-linkedin fa-lg text-primary"></i></a>
+                            <a href="#" class="text-decoration-none me-2"><i class="fab fa-twitter fa-lg text-primary"></i></a>
+                            <a href="#" class="text-decoration-none"><i class="fas fa-envelope fa-lg text-primary"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card text-center h-100 border-0 shadow-sm hover-scale">
+                    <div class="card-body p-4">
+                        <img src="{% static 'images/team2.svg' %}" alt="Team Member 2" class="rounded-circle mb-3" width="150" height="150">
+                        <h4 class="card-title">Jane Smith</h4>
+                        <p class="card-text text-muted">CTO</p>
+                        <p class="card-text small">Jane leads our engineering team with her expertise in cloud infrastructure and application development.</p>
+                        <div class="social-icons mt-3">
+                            <a href="#" class="text-decoration-none me-2"><i class="fab fa-linkedin fa-lg text-primary"></i></a>
+                            <a href="#" class="text-decoration-none me-2"><i class="fab fa-github fa-lg text-primary"></i></a>
+                            <a href="#" class="text-decoration-none"><i class="fas fa-envelope fa-lg text-primary"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card text-center h-100 border-0 shadow-sm hover-scale">
+                    <div class="card-body p-4">
+                        <img src="{% static 'images/team3.svg' %}" alt="Team Member 3" class="rounded-circle mb-3" width="150" height="150">
+                        <h4 class="card-title">Michael Brown</h4>
+                        <p class="card-text text-muted">Head of Customer Success</p>
+                        <p class="card-text small">Michael ensures our clients achieve their inventory management goals with personalized support.</p>
+                        <div class="social-icons mt-3">
+                            <a href="#" class="text-decoration-none me-2"><i class="fab fa-linkedin fa-lg text-primary"></i></a>
+                            <a href="#" class="text-decoration-none me-2"><i class="fab fa-twitter fa-lg text-primary"></i></a>
+                            <a href="#" class="text-decoration-none"><i class="fas fa-envelope fa-lg text-primary"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="card-title text-center mb-4">Get In Touch</h2>
+                        <div class="row mb-4">
+                            <div class="col-md-4 text-center mb-3 mb-md-0">
+                                <i class="fas fa-map-marker-alt text-primary fa-2x mb-3"></i>
+                                <h5>Address</h5>
+                                <p class="text-muted">123 Inventory Lane, Suite 456<br>San Francisco, CA 94103</p>
+                            </div>
+                            <div class="col-md-4 text-center mb-3 mb-md-0">
+                                <i class="fas fa-phone text-primary fa-2x mb-3"></i>
+                                <h5>Phone</h5>
+                                <p class="text-muted">+1 (555) 123-4567</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <i class="fas fa-envelope text-primary fa-2x mb-3"></i>
+                                <h5>Email</h5>
+                                <p class="text-muted">info@inventoryhub.com</p>
+                            </div>
+                        </div>
+
+                        <form>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="name" class="form-label">Name</label>
+                                    <input type="text" class="form-control" id="name" placeholder="Your name">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" placeholder="Your email">
+                                </div>
+                                <div class="col-12">
+                                    <label for="subject" class="form-label">Subject</label>
+                                    <input type="text" class="form-control" id="subject" placeholder="Subject">
+                                </div>
+                                <div class="col-12">
+                                    <label for="message" class="form-label">Message</label>
+                                    <textarea class="form-control" id="message" rows="5" placeholder="Your message"></textarea>
+                                </div>
+                                <div class="col-12 text-center">
+                                    <button type="submit" class="btn btn-primary px-4 py-2">Send Message</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %} 

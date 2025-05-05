@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Terms & Conditions - InventoryHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+    :root {
+        --primary-color: #E42527;
+        --primary-light: #f14344;
+        --accent-color: #F8B21D;
+        --dark-color: #000000;
+        --light-color: #ffffff;
+        --gray-text: #4a4a4a;
+        --border-color: #e2e8f0;
+        --background-color: #fafafa;
+        --section-hover: #fff9eb;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+        background-color: var(--background-color);
+        color: var(--dark-color);
+        line-height: 1.7;
+    }
+
+    header {
+        background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+        color: var(--light-color);
+        padding: 2.5rem 1rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .header-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+
+    .header-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: 3rem auto;
+        padding: 2rem;
+        background: var(--light-color);
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .section {
+        margin-bottom: 2.5rem;
+        padding: 2rem;
+        border-radius: 0.75rem;
+        background: var(--background-color);
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .section:hover {
+        transform: translateY(-2px);
+        background: var(--section-hover);
+        border-left: 4px solid var(--accent-color);
+    }
+
+    h2 {
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        font-size: 2rem;
+        font-weight: 700;
+        position: relative;
+        padding-bottom: 0.75rem;
+    }
+
+    h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: var(--accent-color);
+        border-radius: 2px;
+    }
+
+    h3 {
+        color: var(--dark-color);
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    p, ul {
+        color: var(--gray-text);
+        font-size: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    ul {
+        padding-left: 1.5rem;
+    }
+
+    li {
+        margin-bottom: 0.75rem;
+        position: relative;
+    }
+
+    li::before {
+        content: '•';
+        color: var(--accent-color);
+        font-weight: bold;
+        position: absolute;
+        left: -1.2rem;
+    }
+
+    .highlight {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        color: var(--light-color);
+        padding: 1.25rem;
+        border-radius: 0.75rem;
+        text-align: center;
+        font-size: 1.1rem;
+        margin: 2rem 0;
+        font-weight: 500;
+        box-shadow: 0 4px 6px -1px rgba(228, 37, 39, 0.2);
+    }
+
+    .contact-box {
+        background: var(--background-color);
+        padding: 2rem;
+        border-radius: 0.75rem;
+        margin-top: 2rem;
+        text-align: center;
+        border: 2px solid var(--accent-color);
+    }
+
+    .contact-box i {
+        color: var(--primary-color);
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    footer {
+        background: var(--dark-color);
+        color: var(--light-color);
+        text-align: center;
+        padding: 2rem;
+        margin-top: 3rem;
+    }
+
+    .footer-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin: 1rem 0;
+    }
+
+    .footer-links a {
+        color: var(--light-color);
+        text-decoration: none;
+        opacity: 0.8;
+        transition: opacity 0.2s ease;
+        position: relative;
+    }
+
+    .footer-links a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -4px;
+        left: 0;
+        background-color: var(--accent-color);
+        transition: width 0.3s ease;
+    }
+
+    .footer-links a:hover::after {
+        width: 100%;
+    }
+
+    .footer-links a:hover {
+        opacity: 1;
+        color: var(--accent-color);
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 1rem;
+            margin: 1rem;
+        }
+
+        .section {
+            padding: 1.5rem;
+        }
+
+        .header-title {
+            font-size: 2rem;
+        }
+
+        .footer-links {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block auth_content %}
+<header>
+    <div class="header-content">
+        <h1 class="header-title">Terms & Conditions</h1>
+        <p class="header-subtitle">Please read these terms carefully before using InventoryHub's services</p>
+    </div>
+</header>
+
+<div class="container">
+    <section class="section">
+        <h2>Welcome to InventoryHub</h2>
+        <p>These Terms & Conditions govern your use of InventoryHub's Inventory Management System (IMS) and related services. By accessing or using our platform, you agree to be bound by these terms.</p>
+        
+        <div class="highlight">Last Updated: {{ today|date:"F j, Y" }}</div>
+    </section>
+
+    <section class="section">
+        <h3>1. Account Registration & Security</h3>
+        <ul>
+            <li>Users must provide accurate, current, and complete information during registration</li>
+            <li>Two-factor authentication is mandatory for all administrative accounts</li>
+            <li>Password requirements include minimum 12 characters with special characters and numbers</li>
+            <li>Account access is limited to authorized personnel within your organization</li>
+            <li>Regular security audits of user access patterns are conducted</li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <h3>2. Data Management & Storage</h3>
+        <ul>
+            <li>All inventory data is stored with AES-256 encryption at rest</li>
+            <li>Automated backups are performed every 6 hours with 30-day retention</li>
+            <li>Users maintain full ownership of their inventory data</li>
+            <li>Data export is available in multiple formats (CSV, JSON, XML)</li>
+            <li>Custom data retention policies can be configured per organization</li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <h3>3. API Usage & Integration</h3>
+        <ul>
+            <li>API rate limits are enforced based on subscription tier</li>
+            <li>API keys must be rotated every 90 days</li>
+            <li>Third-party integrations must be approved by InventoryHub</li>
+            <li>WebHooks are provided for real-time inventory updates</li>
+            <li>API documentation is provided with example implementations</li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <h3>4. Subscription & Billing</h3>
+        <ul>
+            <li>Subscription tiers: Basic, Professional, and Enterprise</li>
+            <li>Annual subscriptions receive a 20% discount</li>
+            <li>Payment methods: Credit Card, ACH, and Wire Transfer</li>
+            <li>Usage beyond plan limits incurs additional charges</li>
+            <li>30-day notice required for subscription cancellation</li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <h3>5. Service Level Agreement (SLA)</h3>
+        <ul>
+            <li>99.9% uptime guarantee for Enterprise subscribers</li>
+            <li>Maximum 4-hour response time for critical issues</li>
+            <li>Scheduled maintenance windows with 72-hour advance notice</li>
+            <li>Automatic service credits for SLA violations</li>
+            <li>24/7 support for Enterprise customers</li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <h3>6. Compliance & Audit</h3>
+        <ul>
+            <li>SOC 2 Type II certified infrastructure</li>
+            <li>GDPR and CCPA compliance maintained</li>
+            <li>Annual third-party security assessments</li>
+            <li>Audit logs retained for 12 months</li>
+            <li>Regular compliance training for all staff</li>
+        </ul>
+    </section>
+
+    <div class="contact-box">
+        <i class="fas fa-envelope"></i>
+        <h3>Need Assistance?</h3>
+        <p>Contact our support team at <strong>support@inventoryhub.com</strong></p>
+        <p>Enterprise customers: Call our dedicated line at <strong>1-800-INVENTORY</strong></p>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-links">
+            <a href="{% url 'accounts:profile' %}">Profile</a>
+            <a href="#">Security</a>
+            <a href="#">Support Center</a>
+            <a href="{% url 'index' %}">Back to Home</a>
+        </div>
+        <p>&copy; {% now "Y" %} InventoryHub. All rights reserved.</p>
+    </div>
+</footer>
+{% endblock %}
+
+{% block content %}{% endblock %} 

@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="admin-container">
+    {% include 'components/sidebar.html' %}
+    
+    <main class="admin-main">
+        <div class="admin-header">
+            <div>
+                <h1>Inventory Logs</h1>
+                <p class="text-muted">Track all inventory changes and activities</p>
+            </div>
+            <button class="btn btn-primary" onclick="exportLogs()">
+                <i class="fas fa-download"></i> Export Logs
+            </button>
+        </div>
+
+        <div class="admin-card">
+            <div class="card-header">
+                <form id="filterForm" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Action</label>
+                        <select name="action" class="form-select">
+                            <option value="">All Actions</option>
+                            {% for action in actions %}
+                            <option value="{{ action }}" {% if filters.action == action %}selected{% endif %}>
+                                {{ action }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Time Period</label>
+                        <select name="date" class="form-select">
+                            <option value="">All Time</option>
+                            <option value="today" {% if filters.date == 'today' %}selected{% endif %}>Today</option>
+                            <option value="week" {% if filters.date == 'week' %}selected{% endif %}>Last 7 Days</option>
+                            <option value="month" {% if filters.date == 'month' %}selected{% endif %}>Last 30 Days</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">User</label>
+                        <select name="user" class="form-select">
+                            <option value="">All Users</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}" {% if filters.user == user.id %}selected{% endif %}>
+                                {{ user.username }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Item</label>
+                        <select name="item" class="form-select">
+                            <option value="">All Items</option>
+                            {% for item in items %}
+                            <option value="{{ item.id }}" {% if filters.item == item.id %}selected{% endif %}>
+                                {{ item.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearFilters()">Clear Filters</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>User</th>
+                            <th>Item</th>
+                            <th>Action</th>
+                            <th>Quantity</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td>
+                                <div>{{ log.timestamp|date:"M d, Y" }}</div>
+                                <small class="text-muted">{{ log.timestamp|time:"H:i:s" }}</small>
+                            </td>
+                            <td>{{ log.user.username }}</td>
+                            <td>{{ log.item.name }}</td>
+                            <td>
+                                <span class="badge bg-{{ log.action|lower }}">{{ log.action }}</span>
+                            </td>
+                            <td>{{ log.quantity }}</td>
+                            <td>{{ log.notes|default:"-" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">No logs found matching the filters.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if logs.has_other_pages %}
+            <div class="card-footer">
+                <nav>
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if logs.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ logs.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo;</a>
+                        </li>
+                        {% endif %}
+
+                        {% for i in logs.paginator.page_range %}
+                        <li class="page-item {% if logs.number == i %}active{% endif %}">
+                            <a class="page-link" href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ i }}</a>
+                        </li>
+                        {% endfor %}
+
+                        {% if logs.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ logs.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&raquo;</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ... Same admin-container styles as before ... */
+
+.badge {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 0.5em 0.8em;
+}
+
+.badge-add { background-color: #28a745; }
+.badge-remove { background-color: #dc3545; }
+.badge-update { background-color: #17a2b8; }
+
+.card-footer {
+    padding: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.pagination {
+    margin: 0;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function clearFilters() {
+    window.location.href = window.location.pathname;
+}
+
+function exportLogs() {
+    // Create URL with current filters
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.append('export', 'csv');
+    window.location.href = currentUrl.toString();
+}
+</script>
+{% endblock %}

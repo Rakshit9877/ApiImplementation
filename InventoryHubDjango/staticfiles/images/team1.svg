@@ -1,0 +1,11 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="200" fill="#e6e6e6" rx="10"/>
+  
+  <!-- Person icon -->
+  <circle cx="100" cy="70" r="40" fill="#cccccc"/>
+  <path d="M100 120 Q 60 120 50 170 H 150 Q 140 120 100 120" fill="#cccccc"/>
+  
+  <!-- Text -->
+  <text x="100" y="180" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#555555" text-anchor="middle">Team Member 1</text>
+</svg> 

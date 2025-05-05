@@ -1,0 +1,357 @@
+/* Admin Dashboard Styles */
+:root {
+    --primary-color: #D32D3D;
+    --primary-hover: #c61b37;
+    --background: #F8F9FB;
+    --sidebar-bg: #1A1F36;
+    --card-bg: #FFFFFF;
+    --border-color: #E5E7EB;
+    --text-primary: #111827;
+    --text-secondary: #6B7280;
+    --green: #16A34A;
+    --red: #DC2626;
+    --blue: #1E40AF;
+    --yellow: #FBBF24;
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.dashboard-sidebar {
+    width: 270px;
+    background-color: var(--sidebar-bg);
+    color: white;
+    padding: 1.5rem 1rem;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-logo {
+    width: 40px;
+    height: 40px;
+}
+
+.sidebar-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.2s;
+}
+
+.menu-item:hover, .menu-item.active {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu-item i {
+    font-size: 1.25rem;
+    width: 1.5rem;
+    text-align: center;
+}
+
+.menu-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin: 1rem 0 0.5rem 1rem;
+}
+
+.dashboard-main {
+    flex: 1;
+    margin-left: 270px;
+    padding: 2rem;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.dashboard-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-title {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    color: white;
+}
+
+.stat-icon.green {
+    background-color: var(--green);
+}
+
+.stat-icon.red {
+    background-color: var(--red);
+}
+
+.stat-icon.blue {
+    background-color: var(--blue);
+}
+
+.stat-icon.yellow {
+    background-color: var(--yellow);
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.stat-trend {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.trend-up {
+    color: var(--green);
+}
+
+.trend-down {
+    color: var(--red);
+}
+
+.chart-container {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.chart-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.chart-filters {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.filter-button {
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-button.active, .filter-button:hover {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.recent-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.recent-table th, .recent-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.recent-table th {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-badge.success {
+    background-color: rgba(22, 163, 74, 0.1);
+    color: var(--green);
+}
+
+.status-badge.pending {
+    background-color: rgba(251, 191, 36, 0.1);
+    color: var(--yellow);
+}
+
+.status-badge.error {
+    background-color: rgba(220, 38, 38, 0.1);
+    color: var(--red);
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-sidebar {
+        width: 240px;
+    }
+    
+    .dashboard-main {
+        margin-left: 240px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 100;
+    }
+    
+    .dashboard-sidebar.active {
+        transform: translateX(0);
+    }
+    
+    .dashboard-main {
+        margin-left: 0;
+    }
+    
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.stats-grid .stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stats-grid .stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stats-grid .stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stats-grid .stat-card:nth-child(4) { animation-delay: 0.4s; } 

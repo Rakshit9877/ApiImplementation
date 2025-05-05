@@ -1,0 +1,139 @@
+{% load static %}
+
+<style>
+    .sidebar {
+        width: 260px;
+        height: 100%;
+        min-height: 100vh;
+        background-color: #101529;
+        color: #ffffff;
+        padding: 20px 0;
+        transition: all 0.3s ease;
+        overflow-y: auto;
+        overflow-x: hidden;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+        border-radius: 0;
+    }
+</style>
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <i class="fas fa-boxes"></i>
+        <a href="{% url 'index' %}" style="text-decoration: none; color: white;"><span>InventoryHub</span></a>
+    </div>
+
+    <a href="{% url 'inventory:dashboard' %}" class="nav-item {% if request.resolver_match.view_name == 'inventory:dashboard' %}active{% endif %}">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+    </a>
+
+    <div class="nav-item" data-submenu="inventory">
+        <i class="fas fa-box"></i>
+        <span>Inventory</span>
+        <i class="fas fa-chevron-down arrow"></i>
+    </div>
+    <div class="submenu" id="inventory">
+        <a href="{% url 'inventory:item_list' %}" class="nav-item {% if request.resolver_match.view_name == 'inventory:item_list' %}active{% endif %}">
+            <span>Items</span>
+        </a>
+        <a href="{% url 'inventory:group_list' %}" class="nav-item {% if request.resolver_match.view_name == 'inventory:group_list' %}active{% endif %}">
+            <span>Item Groups</span>
+        </a>
+        <a href="{% url 'inventory:add_item' %}" class="nav-item {% if request.resolver_match.view_name == 'inventory:add_item' %}active{% endif %}">
+            <span>Add New Item</span>
+        </a>
+        <a href="{% url 'inventory:add_group' %}" class="nav-item {% if request.resolver_match.view_name == 'inventory:add_group' %}active{% endif %}">
+            <span>Add New Group</span>
+        </a>
+    </div>
+
+    {% if user.is_staff or user.is_superuser %}
+    <a href="{% url 'admin_dashboard:admin_dashboard' %}" class="nav-item {% if 'admin_dashboard' in request.path %}active{% endif %}">
+        <i class="fas fa-cog"></i>
+        <span>Admin Dashboard</span>
+    </a>
+
+    <div class="nav-item" data-submenu="admin">
+        <i class="fas fa-user-shield"></i>
+        <span>Admin Tools</span>
+        <i class="fas fa-chevron-down arrow"></i>
+    </div>
+    <div class="submenu" id="admin">
+        <a href="{% url 'admin_dashboard:user_management' %}" class="nav-item {% if request.resolver_match.view_name == 'admin_dashboard:user_management' %}active{% endif %}">
+            <span>User Management</span>
+        </a>
+        <a href="{% url 'admin_dashboard:inventory_logs' %}" class="nav-item {% if request.resolver_match.view_name == 'admin_dashboard:inventory_logs' %}active{% endif %}">
+            <span>Inventory Logs</span>
+        </a>
+        <a href="{% url 'admin:index' %}" class="nav-item">
+            <span>Django Admin</span>
+        </a>
+    </div>
+    {% endif %}
+
+    <div class="nav-item" data-submenu="account">
+        <i class="fas fa-user-circle"></i>
+        <span>Account</span>
+        <i class="fas fa-chevron-down arrow"></i>
+    </div>
+    <div class="submenu" id="account">
+        <a href="{% url 'accounts:profile' %}" class="nav-item {% if request.resolver_match.view_name == 'accounts:profile' %}active{% endif %}">
+            <span>Profile</span>
+        </a>
+        <a href="{% url 'accounts:change_password' %}" class="nav-item {% if request.resolver_match.view_name == 'accounts:change_password' %}active{% endif %}">
+            <span>Change Password</span>
+        </a>
+        <a href="{% url 'accounts:logout' %}" class="nav-item">
+            <span>Logout</span>
+        </a>
+    </div>
+
+    <a href="{% url 'about' %}" class="nav-item {% if request.resolver_match.view_name == 'about' %}active{% endif %}">
+        <i class="fas fa-info-circle"></i>
+        <span>About</span>
+    </a>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuItems = document.querySelectorAll('.nav-item[data-submenu]');
+        
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const submenuId = this.getAttribute('data-submenu');
+                const submenu = document.getElementById(submenuId);
+                const wasOpen = this.classList.contains('open');
+                
+                // Close all submenus first
+                document.querySelectorAll('.submenu').forEach(sub => {
+                    sub.classList.remove('open');
+                });
+                document.querySelectorAll('.nav-item[data-submenu]').forEach(navItem => {
+                    navItem.classList.remove('open');
+                });
+                
+                // If the clicked item wasn't open, open it
+                if (!wasOpen) {
+                    submenu.classList.add('open');
+                    this.classList.add('open');
+                }
+            });
+        });
+
+        // Auto-open submenu if a child is active
+        document.querySelectorAll('.submenu .nav-item.active').forEach(activeItem => {
+            const submenu = activeItem.closest('.submenu');
+            if (submenu) {
+                submenu.classList.add('open');
+                const parentItem = document.querySelector(`[data-submenu="${submenu.id}"]`);
+                if (parentItem) {
+                    parentItem.classList.add('open');
+                }
+            }
+        });
+    });
+</script> 

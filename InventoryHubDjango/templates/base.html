@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}InventoryHub{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {% block extra_css %}{% endblock %}
+    <style>
+        /* Additional styles to ensure profile button visibility */
+        .user-profile-link {
+            color: white !important;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-profile-link i {
+            font-size: 1.4rem;
+            margin-right: 6px;
+        }
+        
+        .dropdown-menu {
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border: none;
+            margin-top: 8px;
+        }
+        
+        .dropdown-item {
+            padding: 8px 16px;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Fix for spacing issues */
+        body {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+    </style>
+</head>
+<body>
+    {% if not request.path|slice:":9" == "/accounts" or request.path == "/accounts/profile/" or request.path == "/accounts/change-password/" %}
+    <!-- <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="{% static 'images/logo.svg' %}" alt="InventoryHub Logo" height="30" class="d-inline-block align-top me-2">
+                InventoryHub
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'inventory:dashboard' %}"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'inventory:item_list' %}"><i class="fas fa-boxes me-1"></i> Inventory</a>
+                    </li>
+                    {% if user.is_staff or user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_dashboard:admin_dashboard' %}"><i class="fas fa-tachometer-alt me-1"></i> Admin Dashboard</a>
+                    </li>
+                    {% endif %}
+                    {% if user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin:index' %}"><i class="fas fa-user-shield me-1"></i> Django Admin</a>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'about' %}"><i class="fas fa-info-circle me-1"></i> About</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle user-profile-link" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle"></i> {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fas fa-id-card me-1"></i> Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt me-1"></i> Logout</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:login' %}"><i class="fas fa-sign-in-alt me-1"></i> Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:register' %}"><i class="fas fa-user-plus me-1"></i> Register</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav> -->
+    {% endif %}
+
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% block content %}{% endblock %}
+    
+    {% block auth_content %}{% endblock %}
+
+    {% if not request.path|slice:":9" == "/accounts" or request.path == "/accounts/profile/" or request.path == "/accounts/change-password/" %}
+    <footer class="mt-5 py-3 bg-light">
+        <div class="container text-center">
+            <p class="mb-0">&copy; {% now "Y" %} InventoryHub. All rights reserved.</p>
+        </div>
+    </footer>
+    {% endif %}
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="{% static 'js/custom.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

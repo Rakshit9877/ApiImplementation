@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="InvenTrack - Comprehensive inventory management software for Indian businesses with GST billing and warehouse management">
+    <title>InventoryHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/index.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="/" class="logo">
+                    <img src="../static/images/try_logo.png" alt="InventoryHub Logo" class="nav-logo">
+                </a>
+            </div>
+            
+            <div class="nav-center">
+                <ul class="nav-items">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#solutions">Solutions</a></li>
+                    <li><a href="#integrations">Integrations</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-trigger">
+                            All Products
+                            <svg class="dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none">
+                                <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item">Order Management</a>
+                            <a href="#" class="dropdown-item">Warehouse Management</a>
+                            <a href="#" class="dropdown-item">Inventory Tracking</a>
+                            <a href="#" class="dropdown-item">Reports & Analytics</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-right">
+                <button class="search-btn">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M7.33333 12.6667C10.2789 12.6667 12.6667 10.2789 12.6667 7.33333C12.6667 4.38781 10.2789 2 7.33333 2C4.38781 2 2 4.38781 2 7.33333C2 10.2789 4.38781 12.6667 7.33333 12.6667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M14 14L11 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                {% if not is_authenticated %}
+                    <a href="{{ url_for('loginFunction') }}" class="sign-in">SIGN IN</a>
+                    <a href="{{ url_for('registerFunction') }}" class="sign-up">SIGN UP NOW</a>
+                {% else %}
+                    <a href="{{ url_for('logout') }}" class="sign-out">SIGN OUT</a>
+
+                {% endif %}
+            </div>
+
+            <button class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+   
+<div class="hero">
+  
+        <div class="hero">
+            <p class="heading">Inventory management software designed for Indian businesses</p>
+            <p class="head-description">Manage orders. Track inventory. Handle GST billing. Oversee warehouses. One
+                inventory management software to run all your<br>inventory operations.</p>
+            <div class="button-group">
+                {% if not is_authenticated %}
+                    <a href="{{ url_for('registerFunction') }}" class="button">Sign Up - It's Free</a>
+                    <a href="{{ url_for('inventory') }}" class="button outline">Explore Your Inventory</a>
+
+                {% else %}
+                    <div class="welcome-message">
+                        <h2>Welcome back, {{ user.username }}!</h2>
+                        <p>Managing inventory for You in an Easier Way</p>
+                        <a href="{{ url_for('dashboard') }}" class="button">Go to Dashboard</a>
+                        <a href="{{ url_for('profile') }}" class="button" style="margin-left: 24px;">View Your Profile</a>
+                        {% if user.role == "admin" %}
+                            <a href="{{ url_for('admin_dashboard') }}" class="button" style="margin-left: 24px;">Show Admin Page</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+</div>
+    <img src="../static/images/Screenshot 2025-02-11 at 9.05.50 PM.png" alt="img_err" class="img1">
+    <div class="dashboard-container">
+        <main>
+            <div class="dashboard">
+                <aside class="sidebar">
+                    <nav aria-label="Main navigation">
+                        <ul class="nav-list">
+                            <li class="nav-item active" role="button" tabindex="0">
+                                Dashboard
+                            </li>
+                            <li class="nav-item" role="button" tabindex="0">
+                                Inventory
+                            </li>
+                            <li class="nav-item" role="button" tabindex="0">
+                                Sales
+                            </li>
+                            <li class="nav-item" role="button" tabindex="0">
+                                Purchases
+                            </li>
+                            <li class="nav-item" role="button" tabindex="0">
+                                Integrations
+                            </li>
+                            <li class="nav-item" role="button" tabindex="0">
+                                Reports
+                            </li>
+                            <li class="nav-item" role="button" tabindex="0">
+                                Documents
+                            </li>
+                        </ul>
+                    </nav>
+                </aside>
+                <section class="content">
+                    <h2>Sales Activity</h2>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">To be packed</span>
+                            <span class="stat-value">228</span>
+                            <span class="stat-trend">↑ 12% vs last week</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">To be shipped</span>
+                            <span class="stat-value">6</span>
+                            <span class="stat-trend">↓ 3% vs last week</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">To be delivered</span>
+                            <span class="stat-value">10</span>
+                            <span class="stat-trend">↑ 8% vs last week</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">To be invoiced</span>
+                            <span class="stat-value">474</span>
+                            <span class="stat-trend">↑ 15% vs last week</span>
+                        </div>
+                    </div>
+
+                    <h2>Inventory Summary</h2>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Quantity in hand</span>
+                            <span class="stat-value">10,458</span>
+                            <span class="stat-trend">↑ 5% vs last month</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Quantity to be received</span>
+                            <span class="stat-value">168</span>
+                            <span class="stat-trend">↓ 2% vs last month</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </main>
+    </div>
+
+
+    <div class="block">
+        <div class="block-p">
+            <p>Inventory Management Made Easy with InventoryHub</p>
+        </div>
+    </div>
+
+    <div class="fea-section">
+        <div class="e-invoicing">
+            <img src="../static/images/E-invoicing.png" alt="e-invoince">
+        </div>
+        <h2>From MSMEs to large-scale corporations, InventoryHub <br> supports all businesses</h2>
+        <div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3>Order Management</h3>
+                    <p>Handle sales, purchases, invoices, and shipments to streamline your delivery process.</p>
+                    <a href="#" class="learn-more">Learn More →</a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏢</div>
+                    <h3>Warehouse Management</h3>
+                    <p>Track inventory across multiple warehouses and generate warehouse-specific reports.</p>
+                    <a href="#" class="learn-more">Learn More →</a>
+                </div>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Barcode Scanning</h3>
+                    <p>Seamlessly integrate barcode scanners to manage SKUs, serial numbers, and orders.</p>
+                    <a href="#" class="learn-more">Learn More →</a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3>Integrations</h3>
+                    <p>Connect with platforms like Shopify and Zoho CRM to streamline your operations.</p>
+                    <a href="#" class="learn-more">Learn More →</a>
+                </div>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🛒</div>
+                    <h3>Inventory tracking</h3>
+                    <p>You can keep track of spare parts, saleable items, and even expiry dates with the serial and
+                        batch tracking feature of Zoho Inventory.</p>
+                    <a href="#" class="learn-more">Learn More →</a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📝r</div>
+                    <h3>Reports</h3>
+                    <p>Know your inventory aging, vendor payments, sales details and inventory valuation from a range of
+                        reports which can be generated.</p>
+                    <a href="#" class="learn-more">Learn More →</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="overview">
+            <p>
+                Get a Complete overview of our <a href="" class="blue">Inventory Management System ></a>
+            </p>
+        </div>
+    </div>
+
+    <div class=" integrations">
+        <h2 class="integrations-title">InventoryHub integrates with</h2>
+        <div class="integrations-list">
+            <div class="integration-item">
+                <img src="../static/images/aftership.png" alt="Gsuite" class="IH" style="margin-left: 8.2px;">
+            </div>
+            <div class="integration-item">
+                <img src="../static/images/shopify.png" alt="Zoho Books" class="IH">
+            </div>
+            <div class="integration-item">
+                <img src="../static/images/logo.png" alt="" class="IH">
+            </div>
+            <div class="integration-item">
+                <img src="../static/images/InventoryHub-removebg-preview.png" alt=" CRM" class="IH">
+            </div>
+            <div class="integration-item active">
+                <img src="../static/images/logo_small.png" alt="Cart" class="IH">
+            </div>
+            <div class="integration-item">
+                <img src="../static/images/razorpay.png" alt="Shopify" class="IH">
+            </div>
+            <div class="integration-item">
+                <img src="../static/images/googlr.png" alt="Amazon" class="IH" style="margin-left: 5.5px;">
+            </div>
+        </div>
+        <p class="more-integrations">MORE INTEGRATIONS</p>
+    </div>
+
+
+    <section class="pricing-section">
+        <div class="container">
+            <div class="pricing-header">
+                <h2>Simple pricing. <span class="highlight">No surprises.</span></h2>
+            </div>
+    
+            <div class="pricing-container">
+                <div class="pricing-card">
+                    <h3>Free</h3>
+                    <div class="price">
+                        <span class="currency">₹</span>
+                        <span class="amount">0</span>
+                    </div>
+                    <p class="period">per organization / year</p>
+                    <p class="monthly">₹ 0 per organization / month</p>
+                    <button class="get-started outline">GET STARTED</button>
+                </div>
+    
+                <div class="pricing-card">
+                    <h3>Standard</h3>
+                    <div class="price">
+                        <span class="currency">₹</span>
+                        <span class="amount">12,999</span>
+                    </div>
+                    <p class="period">per organization / year</p>
+                    <p class="monthly">₹ 2,299 per organization / month</p>
+                    <button class="get-started outline">GET STARTED</button>
+                </div>
+    
+                <div class="pricing-card">
+                    <h3>Professional</h3>
+                    <div class="price">
+                        <span class="currency">₹</span>
+                        <span class="amount">26,999</span>
+                    </div>
+                    <p class="period">per organization / year</p>
+                    <p class="monthly">₹ 5,499 per organization / month</p>
+                    <button class="get-started outline">GET STARTED</button>
+                </div>
+    
+                <div class="pricing-card popular">
+                    <div class="popular-tag">MOST POPULAR</div>
+                    <h3>Premium</h3>
+                    <div class="price">
+                        <span class="currency">₹</span>
+                        <span class="amount">45,999</span>
+                    </div>
+                    <p class="period">per organization / year</p>
+                    <p class="monthly">₹ 9,499 per organization / month</p>
+                    <button class="get-started">GET STARTED</button>
+                </div>
+    
+                <div class="pricing-card">
+                    <h3>Enterprise</h3>
+                    <div class="price">
+                        <span class="currency">₹</span>
+                        <span class="amount">89,999</span>
+                    </div>
+                    <p class="period">per organization / year</p>
+                    <p class="monthly">₹ 17,499 per organization / month</p>
+                    <button class="get-started outline">GET STARTED</button>
+                </div>
+            </div>
+    
+            <div class="pricing-footer">
+                <p class="gst-note">* Prices are exclusive of GST.</p>
+                <p class="pricing-link">
+                    Check out our <a href="#" class="blue">Pricing page</a> for complete details ›
+                </p>
+            </div>
+        </div>
+    </section>
+
+
+
+    <div class="block foot-container">
+        <a href=""><img src="../static/images/sign-up.png" alt="" class="img-sign-up"></a>
+    </div>
+
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 InvenTrack. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+
+</html>
+<script src="../static/js/index.js">
+</script>
