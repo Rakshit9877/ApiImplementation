@@ -34,7 +34,7 @@
     <div class="nav-item" data-submenu="inventory">
         <i class="fas fa-box"></i>
         <span>Inventory</span>
-        <i class="fas fa-chevron-down arrow"></i>
+        <i class="fas fa-chevron-down arrow" style="margin-right: 10px;"></i>
     </div>
     <div class="submenu" id="inventory">
         <a href="{% url 'inventory:item_list' %}" class="nav-item {% if request.resolver_match.view_name == 'inventory:item_list' %}active{% endif %}">
@@ -60,7 +60,7 @@
     <div class="nav-item" data-submenu="admin">
         <i class="fas fa-user-shield"></i>
         <span>Admin Tools</span>
-        <i class="fas fa-chevron-down arrow"></i>
+        <i class="fas fa-chevron-down arrow" style="margin-right: 10px;"></i>
     </div>
     <div class="submenu" id="admin">
         <a href="{% url 'admin_dashboard:user_management' %}" class="nav-item {% if request.resolver_match.view_name == 'admin_dashboard:user_management' %}active{% endif %}">
@@ -78,7 +78,7 @@
     <div class="nav-item" data-submenu="account">
         <i class="fas fa-user-circle"></i>
         <span>Account</span>
-        <i class="fas fa-chevron-down arrow"></i>
+        <i class="fas fa-chevron-down arrow" style="margin-right: 10px;"></i>
     </div>
     <div class="submenu" id="account">
         <a href="{% url 'accounts:profile' %}" class="nav-item {% if request.resolver_match.view_name == 'accounts:profile' %}active{% endif %}">

@@ -305,64 +305,62 @@ def item_list(request):
 
 @login_required
 def delete_item(request, item_id):
-    # Get item from Django DB
-    item = get_object_or_404(Item, id=item_id)
-    item_name = item.name
-    
+    try:
+        item = Item.objects.get(id=item_id)
+        is_django = True
+    except Item.DoesNotExist:
+        flask_item = FlaskAPIClient.get_item(item_id)
+        if not flask_item:
+            return render(request, 'inventory/not_found.html', {'type': 'item'})
+        is_django = False
     if request.method == 'POST':
-        # Delete from Django DB
-        item.delete()
-        
-        # Also delete from Flask API
-        flask_response = FlaskAPIClient.delete_item(item_id)
-        
-        if 'error' in flask_response:
-            messages.warning(request, f"Item deleted from Django DB but failed to delete from Flask: {flask_response['error']}")
+        if is_django:
+            item_name = item.name
+            item.delete()
+            flask_response = FlaskAPIClient.delete_item(item_id)
+            if 'error' in flask_response:
+                messages.warning(request, f"Item deleted from Django DB but failed to delete from Flask: {flask_response['error']}")
+            else:
+                messages.success(request, f"Item '{item_name}' deleted from both databases.")
         else:
-            messages.success(request, f"Item '{item_name}' has been deleted successfully from both databases.")
-        
+            flask_response = FlaskAPIClient.delete_item(item_id)
+            if 'error' in flask_response:
+                messages.warning(request, f"Failed to delete item from Flask: {flask_response['error']}")
+            else:
+                messages.success(request, f"Item deleted from Flask API.")
         return redirect('inventory:item_list')
-    
-    return render(request, 'inventory/confirm_delete.html', {'item': item})
+    return render(request, 'inventory/confirm_delete.html', {'item': item if is_django else None, 'flask_item': flask_item if not is_django else None})
 
 @login_required
 def update_item(request, item_id):
-    # Get item from Django DB
-    item = get_object_or_404(Item, id=item_id)
-    
-    if request.method == 'POST':
-        form = ItemForm(request.POST, instance=item)
-        if form.is_valid():
-            # Save to Django DB
-            form.save()
-            
-            # Also update in Flask API
-            flask_item_data = {
-                'name': item.name,
-                'sku': item.sku,
-                'unit': item.unit,
-                'returnable': item.returnable,
-                'selling_price': item.selling_price,
-                'cost_price': item.cost_price,
-                'tax_rate': item.tax_rate,
-                'quantity_in_hand': item.quantity_in_hand,
-                'quantity_to_receive': item.quantity_to_receive,
-                'reorder_point': item.reorder_point
-            }
-            
-            # Call Flask API to update item
-            flask_response = FlaskAPIClient.update_item(item_id, flask_item_data)
-            
-            if 'error' in flask_response:
-                messages.warning(request, f"Item updated in Django DB but failed to update in Flask: {flask_response['error']}")
-            else:
-                messages.success(request, f"Item '{item.name}' has been updated successfully in both databases!")
-            
-            return redirect('inventory:item_list')
+    # Try Django DB first
+    try:
+        item = Item.objects.get(id=item_id)
+        is_django = True
+    except Item.DoesNotExist:
+        flask_item = FlaskAPIClient.get_item(item_id)
+        if not flask_item:
+            return render(request, 'inventory/not_found.html', {'type': 'item'})
+        form = ItemForm(initial=flask_item)
+        is_django = False
     else:
         form = ItemForm(instance=item)
     
-    return render(request, 'inventory/item_form.html', {'form': form, 'item': item})
+    if request.method == 'POST':
+        if is_django:
+            form = ItemForm(request.POST, instance=item)
+            if form.is_valid():
+                form.save()
+                FlaskAPIClient.update_item(item_id, form.cleaned_data)
+                messages.success(request, f"Item '{item.name}' updated in Django and Flask.")
+                return redirect('inventory:item_list')
+        else:
+            form = ItemForm(request.POST)
+            if form.is_valid():
+                FlaskAPIClient.update_item(item_id, form.cleaned_data)
+                messages.success(request, f"Item updated in Flask API.")
+                return redirect('inventory:item_list')
+    return render(request, 'inventory/item_form.html', {'form': form, 'item': item if is_django else None})
 
 @login_required
 def group_list(request):

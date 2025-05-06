@@ -1,365 +1,400 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Login | Cyberpunk Style</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-{% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow-lg border-0 rounded-lg glass-effect">
-                <div class="card-header bg-gradient-primary text-white text-center py-4">
-                    <h3 class="mb-0"><i class="fas fa-user-shield me-2"></i>Real-time Face Recognition</h3>
-                </div>
-                <div class="card-body p-4">
-                    <!-- Status Messages -->
-                    <div id="status-message" class="alert alert-info text-center mb-4 glass-effect">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <span id="status-text">Click 'Start Camera' to begin face recognition</span>
-                    </div>
+        /* Base Styles */
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-                    <!-- Video Preview -->
-                    <div class="video-container mb-4 position-relative glass-effect">
-                        <video id="video" class="w-100 rounded" autoplay playsinline></video>
-                        <div id="loading-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50 rounded" style="display: none;">
-                            <div class="spinner-border text-light" role="status">
-                                <span class="visually-hidden">Processing...</span>
-                            </div>
-                        </div>
-                        <div id="face-overlay" class="position-absolute top-0 start-0 w-100 h-100" style="display: none;">
-                            <div class="face-box"></div>
-                        </div>
-                    </div>
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+        }
 
-                    <!-- Face Detection Status -->
-                    <div class="face-status text-center mb-4 glass-effect p-3">
-                        <div class="d-flex align-items-center justify-content-center">
-                            <div id="face-indicator" class="me-2">
-                                <i class="fas fa-circle text-muted"></i>
-                            </div>
-                            <span id="face-status-text">No face detected</span>
-                        </div>
-                    </div>
+        /* Typography */
+        h1 {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
 
-                    <!-- Action Buttons -->
-                    <div class="d-grid gap-3">
-                        <button id="start-camera" class="btn btn-primary btn-lg glass-effect">
-                            <i class="fas fa-camera me-2"></i>Start Camera
-                        </button>
-                        <a href="{{ url_for('loginFunction') }}" class="btn btn-outline-secondary btn-lg glass-effect">
-                            <i class="fas fa-key me-2"></i>Use Password Instead
-                        </a>
-                    </div>
+        h4 {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #4e73df;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        .small {
+            font-size: 0.8rem;
+            color: #adb5bd;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: #6c757d;
+        }
+
+        /* Glitch Text Effect */
+        .glitch-text {
+            position: relative;
+            animation: glitch 2s infinite linear alternate;
+        }
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 #4e73df, -2px 0 #ff00ff; }
+            25% { text-shadow: -3px 0 #4e73df, 3px 0 #ff00ff; }
+            50% { text-shadow: 2px 0 #00ffaa, -2px 0 #ff00ff; }
+            75% { text-shadow: -3px 0 #00ffaa, 3px 0 #4e73df; }
+            100% { text-shadow: 2px 0 #ff00ff, -2px 0 #00ffaa; }
+        }
+
+        /* Holographic Card */
+        .holographic-card {
+            background: rgba(20, 20, 40, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(78, 115, 223, 0.3);
+            border-radius: 20px;
+            box-shadow: 
+                0 0 20px rgba(78, 115, 223, 0.3),
+                0 0 40px rgba(78, 115, 223, 0.2),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s;
+            animation: float 6s ease-in-out infinite;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .holographic-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(78, 115, 223, 0) 0%,
+                rgba(78, 115, 223, 0.1) 50%,
+                rgba(78, 115, 223, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes shine {
+            0% { transform: rotate(30deg) translate(-30%, -30%); }
+            100% { transform: rotate(30deg) translate(30%, 30%); }
+        }
+
+        /* Cyberpunk Button */
+        .cyber-btn {
+            background: transparent;
+            border: 2px solid #4e73df;
+            border-radius: 4px;
+            color: white;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 
+                0 0 10px rgba(78, 115, 223, 0.5),
+                inset 0 0 10px rgba(78, 115, 223, 0.2);
+            z-index: 1;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .cyber-btn:hover {
+            color: white;
+            box-shadow: 
+                0 0 20px rgba(78, 115, 223, 0.8),
+                inset 0 0 20px rgba(78, 115, 223, 0.4);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            transform: translateY(-3px);
+        }
+        .cyber-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(78, 115, 223, 0.4), transparent);
+            transition: 0.5s;
+            z-index: -1;
+        }
+        .cyber-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Fallback Button */
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #6c757d;
+            border-radius: 4px;
+            color: #adb5bd;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-outline:hover {
+            background: rgba(108, 117, 125, 0.1);
+        }
+
+        /* Scan Lines Overlay */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(
+                    rgba(18, 16, 16, 0) 50%, 
+                    rgba(0, 0, 0, 0.25) 50%
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255, 0, 0, 0.06),
+                    rgba(0, 255, 0, 0.02),
+                    rgba(0, 0, 255, 0.06)
+                );
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Matrix Rain (Optional) */
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        /* Futuristic List Items */
+        .futuristic-list {
+            list-style-type: none;
+            margin-bottom: 1.5rem;
+            padding: 0;
+        }
+        .futuristic-list li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        .futuristic-list li:hover {
+            color: #4e73df;
+            text-shadow: 0 0 10px rgba(78, 115, 223, 0.7);
+        }
+        .futuristic-list li::before {
+            content: '◈';
+            position: absolute;
+            left: 0;
+            color: #4e73df;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Pulsing Divider */
+        .pulse-divider {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #4e73df, transparent);
+            position: relative;
+            margin: 25px 0;
+        }
+        .pulse-divider::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background: #4e73df;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px #4e73df, 0 0 20px #4e73df;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.5); }
+        }
+
+        /* Face Scan Animation */
+        .face-scan {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 30px auto;
+            border: 2px solid #4e73df;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 
+                0 0 20px rgba(78, 115, 223, 0.5),
+                inset 0 0 20px rgba(78, 115, 223, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .face-scan::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(transparent 70%, rgba(78, 115, 223, 0.3));
+            animation: scan 3s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
+        
+        /* Icon Styles */
+        .icon {
+            margin-right: 0.5rem;
+        }
+        
+        .icon-large {
+            font-size: 4rem;
+            color: rgba(78, 115, 223, 0.7);
+        }
+        
+        /* Terminal Cursor */
+        .terminal-cursor {
+            display: inline-block;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 2.5rem;
+        }
+        
+        /* Letter Spacing */
+        .letter-spacing {
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Scan Lines Overlay -->
+    <div class="scanlines"></div>
+
+    <!-- Optional Matrix Rain Background -->
+    <!-- <canvas id="matrixRain" class="matrix-rain"></canvas> -->
+
+    <div class="container">
+        <!-- Cyberpunk Title -->
+        <h1 class="glitch-text">
+            <i class="fas fa-id-card icon"></i>FACE LOGIN PROTOCOL
+        </h1>
+
+        <!-- Holographic Card -->
+        <div class="holographic-card">
+            <div class="text-center">
+                <!-- Face Scan Animation -->
+                <div class="face-scan">
+                    <i class="fas fa-user-astronaut icon-large"></i>
                 </div>
             </div>
 
-            <!-- User Info Modal -->
-            <div class="modal fade" id="userInfoModal" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content glass-effect">
-                        <div class="modal-header bg-gradient-success text-white">
-                            <h5 class="modal-title"><i class="fas fa-check-circle me-2"></i>Login Successful</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body text-center">
-                            <div class="avatar-large mb-3">
-                                <span id="user-avatar" class="display-1"></span>
-                            </div>
-                            <h4 id="user-name" class="mb-2"></h4>
-                            <div class="role-badge mb-3">
-                                <span id="user-role" class="badge bg-primary"></span>
-                            </div>
-                            <p class="text-muted mb-0">Welcome back!</p>
-                        </div>
-                        <div class="modal-footer">
-                            <a href="{{ url_for('dashboard') }}" class="btn btn-primary glass-effect">Go to Dashboard</a>
-                        </div>
-                    </div>
-                </div>
+            <h4>BIOMETRIC VERIFICATION REQUIRED</h4>
+
+            <!-- Futuristic List -->
+            <ul class="futuristic-list">
+                <li><i class="fas fa-lightbulb icon"></i>Ensure proper lighting conditions</li>
+                <li><i class="fas fa-eye icon"></i>Position face within frame</li>
+                <li><i class="fas fa-user-shield icon"></i>No other faces detected</li>
+            </ul>
+
+            <!-- Pulsing Divider -->
+            <div class="pulse-divider"></div>
+
+            <!-- Cyberpunk Button -->
+            <div class="text-center">
+                <button class="cyber-btn">
+                    <i class="fas fa-fingerprint icon"></i>INITIATE SCAN
+                </button>
+                <p class="letter-spacing">SYSTEM READY</p>
+
+                <a href="#" class="btn-outline">
+                    <i class="fas fa-key icon"></i>PASSWORD FALLBACK
+                </a>
             </div>
         </div>
+
+        <!-- Terminal Footer -->
+        <div class="text-center text-muted small footer">
+            <p>CYBERSECURITY PROTOCOL v3.2.1 | © 2023 NEURALINK AUTH SYSTEMS</p>
+            <div class="terminal-cursor">_</div>
+        </div>
     </div>
-</div>
 
-<style>
-/* Glass Effect */
-.glass-effect {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
+    <script>
+        // Simple terminal cursor animation
+        const cursor = document.querySelector('.terminal-cursor');
+        setInterval(() => {
+            cursor.style.visibility = (cursor.style.visibility === 'hidden' ? 'visible' : 'hidden');
+        }, 500);
 
-/* Gradient Background */
-.bg-gradient-primary {
-    background: linear-gradient(45deg, #4e73df, #224abe);
-}
-
-.bg-gradient-success {
-    background: linear-gradient(45deg, #1cc88a, #13855c);
-}
-
-/* Video Container */
-.video-container {
-    aspect-ratio: 4/3;
-    background-color: rgba(248, 249, 250, 0.8);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* Face Box */
-.face-box {
-    position: absolute;
-    border: 3px solid #1cc88a;
-    border-radius: 8px;
-    box-shadow: 0 0 0 2px rgba(28, 200, 138, 0.3);
-    animation: pulse 1.5s infinite;
-}
-
-/* Avatar Styles */
-.avatar-large {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-/* Role Badge */
-.role-badge {
-    font-size: 1.1rem;
-}
-
-.role-badge .badge {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    border-radius: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-/* Face Status */
-.face-status {
-    font-size: 1.1rem;
-    border-radius: 12px;
-}
-
-#face-indicator i {
-    font-size: 1.2rem;
-}
-
-#face-indicator i.text-success {
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.1); }
-    100% { opacity: 1; transform: scale(1); }
-}
-
-/* Card and Button Effects */
-.card {
-    transition: all 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-.btn {
-    transition: all 0.3s ease;
-    border-radius: 8px;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* Modal Styles */
-.modal-content {
-    border: none;
-    border-radius: 12px;
-}
-
-.modal-header {
-    border-radius: 12px 12px 0 0;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-    
-    .card {
-        margin: 0;
-    }
-    
-    .avatar-large {
-        width: 80px;
-        height: 80px;
-    }
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const video = document.getElementById('video');
-    const startCameraBtn = document.getElementById('start-camera');
-    const statusMessage = document.getElementById('status-message');
-    const statusText = document.getElementById('status-text');
-    const faceIndicator = document.getElementById('face-indicator');
-    const faceStatusText = document.getElementById('face-status-text');
-    const loadingOverlay = document.getElementById('loading-overlay');
-    const faceOverlay = document.getElementById('face-overlay');
-    const userInfoModal = new bootstrap.Modal(document.getElementById('userInfoModal'));
-
-    let stream = null;
-    let isProcessing = false;
-    let faceDetectionInterval = null;
-    let loginAttemptInterval = null;
-    let lastLoginAttempt = 0;
-    const LOGIN_COOLDOWN = 2000; // 2 seconds between login attempts
-
-    // Start camera
-    startCameraBtn.addEventListener('click', async () => {
-        try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            video.srcObject = stream;
-            startCameraBtn.disabled = true;
-            showStatus('Camera started. Looking for your face...', 'info');
-            
-            // Start face detection and login attempts
-            startFaceDetection();
-            startLoginAttempts();
-        } catch (err) {
-            showStatus('Error accessing camera: ' + err.message, 'danger');
-        }
-    });
-
-    // Face detection function
-    function startFaceDetection() {
-        faceDetectionInterval = setInterval(async () => {
-            if (isProcessing) return;
-
-            try {
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0);
-                const imageData = canvas.toDataURL('image/jpeg');
-
-                const response = await fetch('/api/face/detect', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        image: imageData
-                    })
-                });
-
-                const data = await response.json();
-                updateFaceStatus(data.face_detected);
-            } catch (err) {
-                console.error('Face detection error:', err);
-            }
-        }, 1000); // Check every second
-    }
-
-    // Real-time login attempts
-    function startLoginAttempts() {
-        loginAttemptInterval = setInterval(async () => {
-            if (isProcessing || Date.now() - lastLoginAttempt < LOGIN_COOLDOWN) return;
-
-            try {
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0);
-                const imageData = canvas.toDataURL('image/jpeg');
-
-                isProcessing = true;
-                loadingOverlay.style.display = 'flex';
-                lastLoginAttempt = Date.now();
-
-                const response = await fetch('/api/face/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        image: imageData,
-                        emotion: 'neutral',
-                        location: 'web'
-                    })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    showStatus('Face recognized successfully!', 'success');
-                    
-                    // Stop all intervals
-                    if (faceDetectionInterval) clearInterval(faceDetectionInterval);
-                    if (loginAttemptInterval) clearInterval(loginAttemptInterval);
-                    
-                    // Stop camera
-                    if (stream) {
-                        stream.getTracks().forEach(track => track.stop());
-                    }
-                    
-                    // Show user info modal
-                    document.getElementById('user-avatar').textContent = data.user.avatar || '👤';
-                    document.getElementById('user-name').textContent = data.user.username || 'User';
-                    document.getElementById('user-role').textContent = data.user.role || 'User';
-                    userInfoModal.show();
-                }
-            } catch (err) {
-                console.error('Login attempt error:', err);
-            } finally {
-                isProcessing = false;
-                loadingOverlay.style.display = 'none';
-            }
-        }, 2000); // Try to login every 2 seconds
-    }
-
-    // Face detection status updates
-    function updateFaceStatus(detected) {
-        const indicator = faceIndicator.querySelector('i');
-        if (detected) {
-            indicator.className = 'fas fa-circle text-success';
-            faceStatusText.textContent = 'Face detected';
-            faceOverlay.style.display = 'block';
-        } else {
-            indicator.className = 'fas fa-circle text-muted';
-            faceStatusText.textContent = 'No face detected';
-            faceOverlay.style.display = 'none';
-        }
-    }
-
-    // Status message helper
-    function showStatus(message, type = 'info') {
-        statusMessage.className = `alert alert-${type} text-center mb-4 glass-effect`;
-        statusText.textContent = message;
-        statusMessage.style.display = 'block';
-    }
-
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-        }
-        if (faceDetectionInterval) {
-            clearInterval(faceDetectionInterval);
-        }
-        if (loginAttemptInterval) {
-            clearInterval(loginAttemptInterval);
-        }
-    });
-});
-</script>
-{% endblock %} 
+        // Button click effect
+        document.querySelector('.cyber-btn').addEventListener('click', function() {
+            this.innerHTML = '<i class="fas fa-cog fa-spin icon"></i> SCANNING...';
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-check icon"></i> VERIFIED';
+                this.style.backgroundColor = 'rgba(28, 200, 138, 0.2)';
+                this.style.borderColor = '#1cc88a';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

@@ -2,39 +2,39 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container py-5" style="background: #f8f5f0; min-height: 100vh;">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="text-center">Face Login</h3>
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm border-0 rounded-4" style="background: #fff;">
+                <div class="card-header bg-white border-0 rounded-top-4 text-center py-4">
+                    <h2 class="fw-bold text-dark mb-0">Face Login</h2>
+                    <p class="text-muted mb-0" style="font-size: 1rem;">Sign in securely with your face</p>
                 </div>
-                <div class="card-body">
-                    <div class="alert alert-info">
-                        <p>Please ensure:</p>
-                        <ul>
-                            <li>You are in a well-lit area</li>
+                <div class="card-body p-4">
+                    <div class="alert alert-info rounded-3 mb-4" style="background: #f3f6fa; color: #2d3a4a; border: none;">
+                        <ul class="mb-0 ps-3" style="font-size: 0.97rem;">
+                            <li>Ensure you are in a well-lit area</li>
                             <li>Your face is clearly visible</li>
                             <li>No other faces are in the frame</li>
                         </ul>
                     </div>
                     <div class="text-center mb-4">
-                        <video id="video" width="640" height="480" autoplay></video>
-                        <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+                        <video id="video" width="320" height="240" autoplay style="border-radius: 12px; background: #f8f9fa; box-shadow: 0 2px 12px rgba(44,62,80,0.06);"></video>
+                        <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
                     </div>
-                    <div class="text-center">
-                        <button id="capture" class="btn btn-primary">Capture</button>
-                        <button id="login" class="btn btn-success" disabled>Login with Face</button>
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+                        <button id="capture" class="btn btn-outline-secondary rounded-pill px-4">Capture</button>
+                        <button id="login" class="btn btn-danger rounded-pill px-4" disabled>Login with Face</button>
                     </div>
-                    <div id="status" class="mt-3 text-center"></div>
+                    <div id="status" class="mt-2 text-center small text-secondary"></div>
                     <div id="confidence" class="mt-3 text-center" style="display: none;">
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                        <div class="progress" style="height: 8px; border-radius: 6px;">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: 0%; border-radius: 6px;"></div>
                         </div>
                         <small class="text-muted mt-2 d-block">Recognition Confidence: <span id="confidenceValue">0</span>%</small>
                     </div>
-                    <div class="text-center mt-3">
-                        <a href="{% url 'accounts:login' %}" class="btn btn-link">Login with Password Instead</a>
+                    <div class="text-center mt-4">
+                        <a href="{% url 'accounts:login' %}" class="btn btn-link text-danger fw-semibold">Login with Password Instead</a>
                     </div>
                 </div>
             </div>
@@ -42,119 +42,167 @@
     </div>
 </div>
 
-<script>
-let video = document.getElementById('video');
-let canvas = document.getElementById('canvas');
-let captureButton = document.getElementById('capture');
-let loginButton = document.getElementById('login');
-let statusDiv = document.getElementById('status');
-let confidenceDiv = document.getElementById('confidence');
-let confidenceBar = document.querySelector('.progress-bar');
-let confidenceValue = document.getElementById('confidenceValue');
-let capturedImage = null;
+<style>
+body {
+    background: #f8f5f0 !important;
+}
+.card {
+    border-radius: 1.5rem !important;
+}
+.btn-danger {
+    background: #d32d2f;
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+}
+.btn-danger:hover, .btn-danger:focus {
+    background: #b71c1c;
+    color: #fff;
+}
+.btn-outline-secondary {
+    border: 1.5px solid #b0b4b9;
+    color: #2d3a4a;
+    background: #f8f9fa;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s;
+}
+.btn-outline-secondary:hover, .btn-outline-secondary:focus {
+    background: #e3e6ea;
+    color: #d32d2f;
+    border-color: #d32d2f;
+}
+.progress-bar.bg-danger {
+    background: linear-gradient(90deg, #d32d2f 60%, #f44336 100%);
+}
+</style>
 
-// Access webcam
-navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => {
-        video.srcObject = stream;
-    })
-    .catch(err => {
-        console.error("Error accessing webcam:", err);
-        statusDiv.innerHTML = "Error accessing webcam. Please ensure you have granted camera permissions.";
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const captureButton = document.getElementById('capture');
+    const loginButton = document.getElementById('login');
+    const statusDiv = document.getElementById('status');
+    const confidenceDiv = document.getElementById('confidence');
+    const confidenceBar = document.querySelector('.progress-bar');
+    const confidenceValue = document.getElementById('confidenceValue');
+    let capturedImage = null;
+    let stream = null;
+
+    // Access webcam
+    async function startCamera() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            statusDiv.innerHTML = "Camera initialized. Ready to capture.";
+        } catch (err) {
+            statusDiv.innerHTML = "<span class='text-danger'>Error accessing webcam. Please allow camera permissions.</span>";
+        }
+    }
+    startCamera();
+
+    // Capture image
+    captureButton.addEventListener('click', () => {
+        if (!stream) {
+            statusDiv.innerHTML = "Camera not initialized. Please refresh the page.";
+            return;
+        }
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        capturedImage = canvas.toDataURL('image/jpeg');
+        loginButton.disabled = false;
+        statusDiv.innerHTML = "Image captured! Click 'Login with Face' to continue.";
+        confidenceDiv.style.display = 'none';
     });
 
-// Capture image
-captureButton.addEventListener('click', () => {
-    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-    capturedImage = canvas.toDataURL('image/jpeg');
-    loginButton.disabled = false;
-    statusDiv.innerHTML = "Image captured! Click 'Login with Face' to continue.";
-    confidenceDiv.style.display = 'none';
-});
-
-// Login with face
-loginButton.addEventListener('click', () => {
-    if (!capturedImage) return;
-
-    statusDiv.innerHTML = "Verifying face...";
-    loginButton.disabled = true;
-    captureButton.disabled = true;
-    
-    fetch('http://localhost:5001/api/face/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            image: capturedImage
+    // Login with face
+    loginButton.addEventListener('click', () => {
+        if (!capturedImage) return;
+        statusDiv.innerHTML = "Verifying face...";
+        loginButton.disabled = true;
+        captureButton.disabled = true;
+        fetch('http://localhost:5001/api/face/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                image: capturedImage
+            })
         })
-    })
-    .then(async response => {
-        if (!response.ok) {
-            const text = await response.text();
-            let errorMsg = 'Unexpected error occurred.';
-            if (text.startsWith('<')) {
-                errorMsg = 'Server returned an HTML error page.';
-            } else {
-                try {
-                    const data = JSON.parse(text);
-                    errorMsg = data.error || errorMsg;
-                } catch (e) {
-                    errorMsg = text;
-                }
-            }
-            throw new Error(errorMsg);
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.error) {
-            statusDiv.innerHTML = `Error: ${data.error}`;
-            loginButton.disabled = false;
-            captureButton.disabled = false;
-        } else {
-            // Show confidence level
-            confidenceDiv.style.display = 'block';
-            const confidence = Math.round(data.confidence * 100);
-            confidenceBar.style.width = `${confidence}%`;
-            confidenceValue.textContent = confidence;
-            
-            statusDiv.innerHTML = "Face recognized! Logging you in...";
-            
-            // Send username/email to Django to log in
-            fetch("{% url 'accounts:face_login_auth' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({
-                    username: data.user.username,
-                    email: data.user.email
-                })
-            })
-            .then(resp => resp.json())
-            .then(authData => {
-                if (authData.success) {
-                    window.location.href = 'http://127.0.0.1:8000/';
+        .then(async response => {
+            if (!response.ok) {
+                const text = await response.text();
+                let errorMsg = 'Unexpected error occurred.';
+                if (text.startsWith('<')) {
+                    errorMsg = 'Server returned an HTML error page.';
                 } else {
-                    statusDiv.innerHTML = `Error: ${authData.error}`;
-                    loginButton.disabled = false;
-                    captureButton.disabled = false;
+                    try {
+                        const data = JSON.parse(text);
+                        errorMsg = data.error || errorMsg;
+                    } catch (e) {
+                        errorMsg = text;
+                    }
                 }
-            })
-            .catch(err => {
-                statusDiv.innerHTML = `Error: ${err.message}`;
+                throw new Error(errorMsg);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                statusDiv.innerHTML = `<span class='text-danger'>${data.error}</span>`;
                 loginButton.disabled = false;
                 captureButton.disabled = false;
-            });
+            } else {
+                // Show confidence level
+                confidenceDiv.style.display = 'block';
+                const confidence = Math.round(data.confidence * 100);
+                confidenceBar.style.width = `${confidence}%`;
+                confidenceValue.textContent = confidence;
+                statusDiv.innerHTML = "Face recognized! Logging you in...";
+                // Send username/email to Django to log in
+                fetch("{% url 'accounts:face_login_auth' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        username: data.user.username,
+                        email: data.user.email
+                    })
+                })
+                .then(resp => resp.json())
+                .then(authData => {
+                    if (authData.success) {
+                        window.location.href = 'http://127.0.0.1:8000/';
+                    } else {
+                        statusDiv.innerHTML = `<span class='text-danger'>${authData.error}</span>`;
+                        loginButton.disabled = false;
+                        captureButton.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    statusDiv.innerHTML = `<span class='text-danger'>${err.message}</span>`;
+                    loginButton.disabled = false;
+                    captureButton.disabled = false;
+                });
+            }
+        })
+        .catch(error => {
+            statusDiv.innerHTML = `<span class='text-danger'>${error.message}</span>`;
+            loginButton.disabled = false;
+            captureButton.disabled = false;
+        });
+    });
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
         }
-    })
-    .catch(error => {
-        statusDiv.innerHTML = `Error: ${error.message}`;
-        loginButton.disabled = false;
-        captureButton.disabled = false;
     });
 });
 </script>
-{% endblock %} 
+{% endblock %}

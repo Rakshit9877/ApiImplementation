@@ -14,11 +14,12 @@
         }
 
         .registration-container {
-            min-height: 100vh;
+            min-height: 140vh;
+            padding: 0;
         }
 
         .carousel {
-            height: 793px;
+            height: 960px;
             border-radius: 1rem;
         }
 
@@ -75,12 +76,13 @@
         }
 
         .form-container {
-            background-color: white;
+            margin-top: 200px;
+            background-color: #fff;
             border-radius: 1.5rem;
             padding: 3rem 2.5rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease;
-            height: 893px;
+            transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+            height: 1093px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -100,14 +102,14 @@
             padding: 0.8rem 1rem 0.8rem 2.5rem;
             border: 1.5px solid #e0e0e0;
             font-size: 0.95rem;
-            transition: all 0.3s ease;
+            transition: border-color 0.3s, box-shadow 0.3s;
             border-radius: 0.5rem;
             height: 50px;
         }
 
         .form-control:focus {
-            border-color: #E0E0E0;
-            box-shadow: 0 0 0 0.2rem rgba(255, 68, 68, 0.25);
+            border-color: #ff4444;
+            box-shadow: 0 0 0 0.2rem rgba(255, 68, 68, 0.15);
         }
 
         .input-icon {
@@ -126,12 +128,12 @@
             border-radius: 0.65rem;
             font-weight: 500;
             font-size: 1rem;
-            transition: all 0.3s ease;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
             height: 50px;
             width: 100%;
         }
 
-        .btn-danger:hover {
+        .btn-danger:hover, .btn-danger:focus {
             background-color: #ff3333;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255, 68, 68, 0.2);
@@ -171,59 +173,51 @@
             font-size: 0.9rem;
         }
 
-        @media screen and (max-width: 991px) {
+        /* Responsive adjustments */
+        @media (max-width: 991px) {
             .registration-container {
                 padding: 2rem 1rem;
             }
-            
-            .registration-container .form-container {
+            .form-container {
                 height: auto;
                 width: 100%;
                 padding: 2rem;
             }
-            
-            .registration-container .carousel {
+            .carousel {
                 height: auto;
             }
-            
-            .registration-container .carousel-item {
+            .carousel-item {
                 height: auto;
                 padding: 1.5rem;
             }
         }
 
-        @media screen and (max-width: 768px) {
+        @media (max-width: 768px) {
             .registration-container .row {
                 flex-direction: column;
             }
-            
             .registration-container .col-md-6 {
                 width: 100%;
             }
-            
-            .registration-container .form-container {
+            .form-container {
                 margin-top: 2rem;
                 transform: none !important;
             }
-            
-            .registration-container .welcome-text {
+            .welcome-text {
                 margin-bottom: 2rem;
             }
         }
 
-        @media screen and (max-width: 576px) {
-            .registration-container .form-container {
+        @media (max-width: 576px) {
+            .form-container {
                 padding: 1.5rem;
             }
-            
-            .registration-container .btn-danger {
+            .btn-danger {
                 height: 45px;
             }
-            
             .registration-container .row.mb-3 {
                 flex-direction: column;
             }
-            
             .registration-container .row.mb-3 .col {
                 width: 100%;
             }
@@ -275,7 +269,7 @@
                 <div class="col-md-6">
                     <div class="form-container">
                         <div class="text-center welcome-text">
-                            <h2 class="fw-bold" style="margin-top: 80px;">Let's get started</h2>
+                            <h2 class="fw-bold" style="margin-top: 0px;">Let's get started</h2>
                             <p class="text-muted">Create your account to continue</p>
                         </div>
 

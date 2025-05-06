@@ -258,6 +258,17 @@
     {% include 'components/sidebar.html' %}
     
     <div class="user-management-container">
+        {% if messages %}
+        <div class="alert-container">
+            {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                {{ message }}
+                <button type="button" class="close-alert" onclick="this.parentElement.remove()">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <div class="page-header">
             <h1 class="page-title">User Management</h1>
             <p class="page-description">Manage system users and their permissions</p>
@@ -266,10 +277,10 @@
         <div class="admin-card">
             <div class="card-header">
                 <div class="search-controls">
-                    <input type="text" class="search-input" placeholder="Search users...">
-                    <select class="filter-select">
+                    <input type="text" class="search-input" id="userSearch" placeholder="Search users..." onkeyup="filterUsers()">
+                    <select class="filter-select" id="roleFilter" onchange="filterUsers()">
                         <option value="">All Roles</option>
-                        <option value="admin">Admin</option>
+                        <option value="superuser">Superuser</option>
                         <option value="staff">Staff</option>
                         <option value="user">Regular User</option>
                     </select>
@@ -281,7 +292,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="user-table">
+                <table class="user-table" id="userTable">
                     <thead>
                         <tr>
                             <th>User</th>
@@ -293,7 +304,7 @@
                     </thead>
                     <tbody>
                         {% for user in users %}
-                        <tr>
+                        <tr class="user-row" data-role="{% if user.is_superuser %}superuser{% elif user.is_staff %}staff{% else %}user{% endif %}">
                             <td>
                                 <div class="user-info">
                                     <div class="user-avatar">
@@ -316,14 +327,21 @@
                             </td>
                             <td>
                                 <div class="action-buttons">
-                                    <a href="{% url 'admin_dashboard:edit_user' user.id %}" class="btn btn-edit">
+                                    <a href="{% url 'admin_dashboard:edit_user' user.id %}" class="btn btn-edit" title="Edit User">
                                         <i class="fas fa-edit"></i>
                                         Edit
                                     </a>
-                                    <button class="btn btn-delete" onclick="deleteUser({{ user.id }})">
-                                        <i class="fas fa-trash"></i>
-                                        Delete
-                                    </button>
+                                    {% if not user.is_superuser %}
+                                    <form method="POST" action="{% url 'admin_dashboard:user_management' %}" class="delete-form" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                                        <button type="button" class="btn btn-delete" onclick="confirmDelete('{{ user.username }}', this.form)" title="Delete User">
+                                            <i class="fas fa-trash"></i>
+                                            Delete
+                                        </button>
+                                    </form>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -341,7 +359,7 @@
         <div class="modal-header">
             <h4>Confirm Delete</h4>
         </div>
-        <p>Are you sure you want to delete this user? This action cannot be undone.</p>
+        <p>Are you sure you want to delete user "<span id="deleteUserName"></span>"? This action cannot be undone.</p>
         <div class="modal-footer">
             <button class="btn btn-edit" onclick="closeModal()">Cancel</button>
             <button id="confirmDelete" class="btn btn-delete">Delete</button>
@@ -350,44 +368,42 @@
 </div>
 
 <script>
-let userToDelete = null;
 const modal = document.getElementById('deleteModal');
+let formToSubmit = null;
 
-function deleteUser(userId) {
-    if (confirm('Are you sure you want to delete this user?')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = window.location.href;
-
-        // Get CSRF token
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = 'csrfmiddlewaretoken';
-        csrfInput.value = csrfToken;
-
-        const actionInput = document.createElement('input');
-        actionInput.type = 'hidden';
-        actionInput.name = 'action';
-        actionInput.value = 'delete';
-
-        const userIdInput = document.createElement('input');
-        userIdInput.type = 'hidden';
-        userIdInput.name = 'user_id';
-        userIdInput.value = userId;
-
-        form.appendChild(csrfInput);
-        form.appendChild(actionInput);
-        form.appendChild(userIdInput);
-        document.body.appendChild(form);
-        form.submit();
-    }
+function confirmDelete(username, form) {
+    document.getElementById('deleteUserName').textContent = username;
+    formToSubmit = form;
+    modal.style.display = 'block';
 }
 
 function closeModal() {
     modal.style.display = 'none';
-    userToDelete = null;
+    formToSubmit = null;
+}
+
+document.getElementById('confirmDelete').onclick = function() {
+    if (formToSubmit) {
+        formToSubmit.submit();
+    }
+    closeModal();
+}
+
+function filterUsers() {
+    const searchText = document.getElementById('userSearch').value.toLowerCase();
+    const roleFilter = document.getElementById('roleFilter').value;
+    const rows = document.getElementsByClassName('user-row');
+
+    for (let row of rows) {
+        const username = row.querySelector('.user-info div:last-child').textContent.toLowerCase();
+        const email = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+        const role = row.dataset.role;
+        
+        const matchesSearch = username.includes(searchText) || email.includes(searchText);
+        const matchesRole = !roleFilter || role === roleFilter;
+        
+        row.style.display = matchesSearch && matchesRole ? '' : 'none';
+    }
 }
 
 // Close modal when clicking outside
@@ -396,5 +412,61 @@ window.onclick = function(event) {
         closeModal();
     }
 }
+
+// Add styles for alerts
+const style = document.createElement('style');
+style.textContent = `
+    .alert-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+    
+    .alert {
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-width: 300px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        animation: slideIn 0.3s ease-out;
+    }
+    
+    .alert-success {
+        background: #dcfce7;
+        color: #16a34a;
+        border: 1px solid #86efac;
+    }
+    
+    .alert-error {
+        background: #fee2e2;
+        color: #dc2626;
+        border: 1px solid #fca5a5;
+    }
+    
+    .close-alert {
+        background: none;
+        border: none;
+        color: inherit;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0 5px;
+    }
+    
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+`;
+document.head.appendChild(style);
 </script>
 {% endblock %}
