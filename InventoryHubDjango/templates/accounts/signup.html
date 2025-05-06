@@ -279,209 +279,103 @@
                             <p class="text-muted">Create your account to continue</p>
                         </div>
 
-                        <form method="post" action="{% url 'accounts:register' %}">
+                        <form method="post" action="{% url 'accounts:register' %}" id="registrationForm">
                             {% csrf_token %}
                             
+                            {% if form.errors %}
+                            <div class="alert alert-danger">
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
+                            {% if messages %}
+                            <div class="messages">
+                                {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">
+                                    {{ message }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
                             <div class="form-group">
                                 <i class="bi bi-person input-icon"></i>
-                                <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" placeholder="Username" class="form-control" value="{{ form.username.value|default_if_none:'' }}" required>
+                                {{ form.username }}
                                 {% if form.username.errors %}
                                 <div class="error">{{ form.username.errors }}</div>
                                 {% endif %}
                             </div>
-                            
                             <div class="form-group">
                                 <i class="bi bi-envelope input-icon"></i>
-                                <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" placeholder="Email Address" class="form-control" value="{{ form.email.value|default_if_none:'' }}" required>
+                                {{ form.email }}
                                 {% if form.email.errors %}
                                 <div class="error">{{ form.email.errors }}</div>
                                 {% endif %}
                             </div>
-                            
                             <div class="form-group">
                                 <i class="bi bi-phone input-icon"></i>
-                                <input type="tel" name="{{ form.phone.name }}" id="{{ form.phone.id_for_label }}" placeholder="Phone Number" class="form-control" value="{{ form.phone.value|default_if_none:'' }}" required>
+                                {{ form.phone }}
                                 {% if form.phone.errors %}
                                 <div class="error">{{ form.phone.errors }}</div>
                                 {% endif %}
                             </div>
-                            
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <i class="bi bi-globe input-icon"></i>
-                                        <select name="{{ form.country.name }}" id="{{ form.country.id_for_label }}" class="form-control" required>
-                                            <option value="">Country</option>
-                                            <option value="">India</option>
-                                            <option value="">United States</option>
-                                            <option value="">United Kingdom</option>
-                                            <option value="">Canada</option>
-                                            <option value="">Australia</option>
-                                            <option value="">Germany</option>
-                                            <option value="">France</option>
-                                            <option value="">Italy</option>
-                                            <option value="">Spain</option>
-                                            <option value="">Brazil</option>
-                                            <option value="">Mexico</option>
-                                            <option value="">China</option>
-                                            <option value="">Japan</option>
-                                            <option value="">South Korea</option>
-                                            <option value="">Russia</option>
-                                            <option value="">South Africa</option>
-                                            <option value="">Argentina</option>
-                                            <option value="">Colombia</option>
-                                            <option value="">Netherlands</option>
-                                            <option value="">Sweden</option>
-                                            <option value="">Norway</option>
-                                            <option value="">Denmark</option>
-                                            <option value="">Finland</option>
-                                            <option value="">Switzerland</option>
-                                            <option value="">Austria</option>
-                                            <option value="">Belgium</option>
-                                            <option value="">Portugal</option>
-                                            <option value="">Greece</option>
-                                            <option value="">Turkey</option>
-                                            <option value="">Saudi Arabia</option>
-                                            <option value="">United Arab Emirates</option>
-                                            <option value="">Egypt</option>
-                                            <option value="">Nigeria</option>
-                                            <option value="">Kenya</option>
-                                            <option value="">Ethiopia</option>
-                                            <option value="">Thailand</option>
-                                            <option value="">Vietnam</option>
-                                            <option value="">Malaysia</option>
-                                            <option value="">Singapore</option>
-                                            <option value="">Indonesia</option>
-                                            <option value="">Philippines</option>
-                                            <option value="">New Zealand</option>
-                                            <option value="">Pakistan</option>
-                                            <option value="">Bangladesh</option>
-                                            <option value="">Sri Lanka</option>
-                                            <option value="">Nepal</option>
-                                            <option value="">Bhutan</option>
-                                            <option value="">Maldives</option>
-                                            <option value="">Czech Republic</option>
-                                            <option value="">Poland</option>
-                                            <option value="">Hungary</option>
-                                            <option value="">Romania</option>
-                                            <option value="">Ukraine</option>
-                                            <option value="">Chile</option>
-                                            <option value="">Peru</option>
-                                            <option value="">Venezuela</option>
-                                            <!-- Add country options here -->
-                                        </select>
-                                        {% if form.country.errors %}
-                                        <div class="error">{{ form.country.errors }}</div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group">
-                                        <i class="bi bi-pin-map input-icon"></i>
-                                        <select name="{{ form.state.name }}" id="{{ form.state.id_for_label }}" class="form-control" required>
-                                            <option value="">State</option>
-                                            <option value="">Andhra Pradesh</option>
-                                            <option value="">Arunachal Pradesh</option>
-                                            <option value="">Assam</option>
-                                            <option value="">Bihar</option>
-                                            <option value="">Chhattisgarh</option>
-                                            <option value="">Goa</option>
-                                            <option value="">Gujarat</option>
-                                            <option value="">Haryana</option>
-                                            <option value="">Himachal Pradesh</option>
-                                            <option value="">Jharkhand</option>
-                                            <option value="">Karnataka</option>
-                                            <option value="">Kerala</option>
-                                            <option value="">Madhya Pradesh</option>
-                                            <option value="">Maharashtra</option>
-                                            <option value="">Manipur</option>
-                                            <option value="">Meghalaya</option>
-                                            <option value="">Mizoram</option>
-                                            <option value="">Nagaland</option>
-                                            <option value="">Odisha</option>
-                                            <option value="">Punjab</option>
-                                            <option value="">Rajasthan</option>
-                                            <option value="">Sikkim</option>
-                                            <option value="">Tamil Nadu</option>
-                                            <option value="">Telangana</option>
-                                            <option value="">Tripura</option>
-                                            <option value="">Uttar Pradesh</option>
-                                            <option value="">Uttarakhand</option>
-                                            <option value="">West Bengal</option>
-                                            <option value="">Delhi</option>
-                                            <option value="">Jammu and Kashmir</option>
-                                            <option value="">Ladakh</option>
-                                            <option value="">Puducherry</option>
-                                            <option value="">Chandigarh</option>
-                                            <option value="">Andaman and Nicobar Islands</option>
-                                            <option value="">Lakshadweep</option>
-                                            <!-- Foreign states -->
-                                            <option value="">California</option>
-                                            <option value="">Texas</option>
-                                            <option value="">New York</option>
-                                            <option value="">Florida</option>
-                                            <option value="">Ontario</option>
-                                            <option value="">Quebec</option>
-                                            <option value="">British Columbia</option>
-                                            <option value="">New South Wales</option>
-                                            <option value="">Victoria</option>
-                                            <option value="">Queensland</option>
-                                            <option value="">Bavaria</option>
-                                            <option value="">Berlin</option>
-                                            <option value="">Hamburg</option>
-                                            <option value="">Ile-de-France</option>
-                                            <option value="">Provence-Alpes-Côte d'Azur</option>
-                                            <option value="">Lombardy</option>
-                                            <option value="">Catalonia</option>
-                                            <option value="">Andalusia</option>
-                                            <option value="">São Paulo</option>
-                                            <option value="">Rio de Janeiro</option>
-                                            <option value="">Shanghai</option>
-                                            <option value="">Beijing</option>
-                                            <option value="">Tokyo</option>
-                                            <option value="">Osaka</option>
-                                            <option value="">Seoul</option>
-                                            <option value="">Moscow</option>
-                                            <option value="">Saint Petersburg</option>
-                                            <option value="">Gauteng</option>
-                                            <option value="">Western Cape</option>
-                                        </select>
-                                        {% if form.state.errors %}
-                                        <div class="error">{{ form.state.errors }}</div>
-                                        {% endif %}
-                                    </div>
-                                </div>
+                            <div class="form-group">
+                                <i class="bi bi-globe input-icon"></i>
+                                {{ form.country }}
+                                {% if form.country.errors %}
+                                <div class="error">{{ form.country.errors }}</div>
+                                {% endif %}
                             </div>
-                            
+                            <div class="form-group">
+                                <i class="bi bi-pin-map input-icon"></i>
+                                {{ form.state }}
+                                {% if form.state.errors %}
+                                <div class="error">{{ form.state.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <i class="bi bi-person input-icon"></i>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                <div class="error">{{ form.first_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <i class="bi bi-person input-icon"></i>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                <div class="error">{{ form.last_name.errors }}</div>
+                                {% endif %}
+                            </div>
                             <div class="form-group">
                                 <i class="bi bi-lock input-icon"></i>
-                                <input type="password" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}" placeholder="Password" class="form-control" required>
+                                {{ form.password1 }}
                                 {% if form.password1.errors %}
                                 <div class="error">{{ form.password1.errors }}</div>
                                 {% endif %}
                             </div>
-                            
                             <div class="form-group">
                                 <i class="bi bi-lock-fill input-icon"></i>
-                                <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}" placeholder="Confirm Password" class="form-control" required>
+                                {{ form.password2 }}
                                 {% if form.password2.errors %}
                                 <div class="error">{{ form.password2.errors }}</div>
                                 {% endif %}
                             </div>
-                            
                             {% if form.non_field_errors %}
                             <div class="alert alert-danger">
                                 {{ form.non_field_errors }}
                             </div>
                             {% endif %}
-                            
                             <div class="mb-3 form-check">
                                 <input type="checkbox" class="form-check-input" id="terms" required>
                                 <label class="form-check-label" for="terms">
                                     I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Privacy Policy</a>
                                 </label>
                             </div>
-
                             <button type="submit" class="btn btn-danger">
                                 Create your account <i class="bi bi-arrow-right ms-2"></i>
                             </button>

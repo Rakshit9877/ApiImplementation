@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-lg glass-effect">
+                <div class="card-header bg-gradient-primary text-white text-center py-4">
+                    <h3 class="mb-0"><i class="fas fa-user-plus me-2"></i>Face Registration</h3>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Progress Indicator -->
+                    <div class="registration-progress mb-4 glass-effect p-3">
+                        <div class="progress mb-2" style="height: 10px;">
+                            <div id="progress-bar" class="progress-bar bg-gradient-success" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Registration Progress</small>
+                            <small id="progress-text" class="text-muted">0/5 captures</small>
+                        </div>
+                    </div>
+
+                    <!-- Status Messages -->
+                    <div id="status-message" class="alert alert-info text-center mb-4 glass-effect">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <span id="status-text">Click 'Start Camera' to begin registration</span>
+                    </div>
+
+                    <!-- Video Preview -->
+                    <div class="video-container mb-4 position-relative glass-effect">
+                        <video id="video" class="w-100 rounded" autoplay playsinline></video>
+                        <div id="loading-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50 rounded" style="display: none;">
+                            <div class="spinner-border text-light" role="status">
+                                <span class="visually-hidden">Processing...</span>
+                            </div>
+                        </div>
+                        <div id="face-overlay" class="position-absolute top-0 start-0 w-100 h-100" style="display: none;">
+                            <div class="face-box"></div>
+                        </div>
+                    </div>
+
+                    <!-- Face Detection Status -->
+                    <div class="face-status text-center mb-4 glass-effect p-3">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div id="face-indicator" class="me-2">
+                                <i class="fas fa-circle text-muted"></i>
+                            </div>
+                            <span id="face-status-text">No face detected</span>
+                        </div>
+                    </div>
+
+                    <!-- Registration Form -->
+                    <form id="registration-form" class="mb-4 glass-effect p-3">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control glass-effect" id="email" required>
+                        </div>
+                    </form>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-3">
+                        <button id="start-camera" class="btn btn-primary btn-lg glass-effect">
+                            <i class="fas fa-camera me-2"></i>Start Camera
+                        </button>
+                        <a href="{{ url_for('loginFunction') }}" class="btn btn-outline-secondary btn-lg glass-effect">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Modal -->
+            <div class="modal fade" id="successModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content glass-effect">
+                        <div class="modal-header bg-gradient-success text-white">
+                            <h5 class="modal-title"><i class="fas fa-check-circle me-2"></i>Registration Complete</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <div class="success-icon mb-3">
+                                <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                            </div>
+                            <h4 class="mb-3">Face Registration Successful!</h4>
+                            <p class="text-muted mb-0">Your face has been registered successfully. You can now use face recognition to login.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="{{ url_for('face_login_page') }}" class="btn btn-primary glass-effect">Try Face Login</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Glass Effect */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Gradient Background */
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #4e73df, #224abe);
+}
+
+.bg-gradient-success {
+    background: linear-gradient(45deg, #1cc88a, #13855c);
+}
+
+/* Video Container */
+.video-container {
+    aspect-ratio: 4/3;
+    background-color: rgba(248, 249, 250, 0.8);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Face Box */
+.face-box {
+    position: absolute;
+    border: 3px solid #1cc88a;
+    border-radius: 8px;
+    box-shadow: 0 0 0 2px rgba(28, 200, 138, 0.3);
+    animation: pulse 1.5s infinite;
+}
+
+/* Progress Bar */
+.progress {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 0.5s ease;
+}
+
+/* Success Icon */
+.success-icon {
+    color: #1cc88a;
+    animation: scaleIn 0.5s ease-out;
+}
+
+/* Face Status */
+.face-status {
+    font-size: 1.1rem;
+    border-radius: 12px;
+}
+
+#face-indicator i {
+    font-size: 1.2rem;
+}
+
+#face-indicator i.text-success {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.1); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+}
+
+/* Card and Button Effects */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.btn {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Controls */
+.form-control {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+/* Modal Styles */
+.modal-content {
+    border: none;
+    border-radius: 12px;
+}
+
+.modal-header {
+    border-radius: 12px 12px 0 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .card {
+        margin: 0;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const video = document.getElementById('video');
+    const startCameraBtn = document.getElementById('start-camera');
+    const statusMessage = document.getElementById('status-message');
+    const statusText = document.getElementById('status-text');
+    const faceIndicator = document.getElementById('face-indicator');
+    const faceStatusText = document.getElementById('face-status-text');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const faceOverlay = document.getElementById('face-overlay');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const registrationForm = document.getElementById('registration-form');
+    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+
+    let stream = null;
+    let isProcessing = false;
+    let faceDetectionInterval = null;
+    let registrationInterval = null;
+    let lastRegistrationAttempt = 0;
+    let capturesCompleted = 0;
+    const TOTAL_CAPTURES = 5;
+    const REGISTRATION_COOLDOWN = 2000; // 2 seconds between registration attempts
+
+    // Start camera
+    startCameraBtn.addEventListener('click', async () => {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            startCameraBtn.disabled = true;
+            showStatus('Camera started. Looking for your face...', 'info');
+            
+            // Start face detection and registration attempts
+            startFaceDetection();
+            startRegistrationAttempts();
+        } catch (err) {
+            showStatus('Error accessing camera: ' + err.message, 'danger');
+        }
+    });
+
+    // Face detection function
+    function startFaceDetection() {
+        faceDetectionInterval = setInterval(async () => {
+            if (isProcessing) return;
+
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                const imageData = canvas.toDataURL('image/jpeg');
+
+                const response = await fetch('/api/face/detect', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        image: imageData
+                    })
+                });
+
+                const data = await response.json();
+                updateFaceStatus(data.face_detected);
+            } catch (err) {
+                console.error('Face detection error:', err);
+            }
+        }, 1000); // Check every second
+    }
+
+    // Real-time registration attempts
+    function startRegistrationAttempts() {
+        registrationInterval = setInterval(async () => {
+            if (isProcessing || Date.now() - lastRegistrationAttempt < REGISTRATION_COOLDOWN) return;
+            
+            const email = document.getElementById('email').value;
+            if (!email) {
+                showStatus('Please enter your email address', 'warning');
+                return;
+            }
+
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                const imageData = canvas.toDataURL('image/jpeg');
+
+                isProcessing = true;
+                loadingOverlay.style.display = 'flex';
+                lastRegistrationAttempt = Date.now();
+
+                const response = await fetch('/api/face/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        image: imageData,
+                        email: email
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    capturesCompleted++;
+                    updateProgress();
+                    showStatus(`Face captured successfully! ${data.remaining_encodings} more needed.`, 'success');
+
+                    if (capturesCompleted >= TOTAL_CAPTURES) {
+                        // Registration complete
+                        if (faceDetectionInterval) clearInterval(faceDetectionInterval);
+                        if (registrationInterval) clearInterval(registrationInterval);
+                        if (stream) {
+                            stream.getTracks().forEach(track => track.stop());
+                        }
+                        successModal.show();
+                    }
+                } else {
+                    showStatus(data.error || 'Face registration failed', 'danger');
+                }
+            } catch (err) {
+                console.error('Registration attempt error:', err);
+                showStatus('Error during registration: ' + err.message, 'danger');
+            } finally {
+                isProcessing = false;
+                loadingOverlay.style.display = 'none';
+            }
+        }, 2000); // Try to register every 2 seconds
+    }
+
+    // Face detection status updates
+    function updateFaceStatus(detected) {
+        const indicator = faceIndicator.querySelector('i');
+        if (detected) {
+            indicator.className = 'fas fa-circle text-success';
+            faceStatusText.textContent = 'Face detected';
+            faceOverlay.style.display = 'block';
+        } else {
+            indicator.className = 'fas fa-circle text-muted';
+            faceStatusText.textContent = 'No face detected';
+            faceOverlay.style.display = 'none';
+        }
+    }
+
+    // Progress updates
+    function updateProgress() {
+        const progress = (capturesCompleted / TOTAL_CAPTURES) * 100;
+        progressBar.style.width = `${progress}%`;
+        progressText.textContent = `${capturesCompleted}/${TOTAL_CAPTURES} captures`;
+    }
+
+    // Status message helper
+    function showStatus(message, type = 'info') {
+        statusMessage.className = `alert alert-${type} text-center mb-4 glass-effect`;
+        statusText.textContent = message;
+        statusMessage.style.display = 'block';
+    }
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        if (faceDetectionInterval) {
+            clearInterval(faceDetectionInterval);
+        }
+        if (registrationInterval) {
+            clearInterval(registrationInterval);
+        }
+    });
+});
+</script>
+{% endblock %} 

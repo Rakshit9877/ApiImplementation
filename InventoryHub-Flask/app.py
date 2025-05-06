@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, login_required, logout_user, UserMixin, current_user
 from sqlalchemy import func, case
@@ -8,6 +8,13 @@ from functools import wraps
 from flask import jsonify
 from datetime import timedelta
 from flask_cors import CORS
+import face_recognition
+import cv2
+import numpy as np
+import base64
+import json
+import os
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -21,10 +28,41 @@ login_manager.login_view = "loginFunction"
 login_manager.login_message = "Please login to access this page."
 login_manager.login_message_category = "error"
 
+migrate = Migrate(app, db)
+
 @login_manager.unauthorized_handler
 def unauthorized():
     flash("Please login to access this page.", "error")
     return redirect(url_for('loginFunction'))
+
+# Face Recognition Model
+class FaceEncoding(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    encoding = db.Column(db.Text, nullable=False)  # Store face encoding as JSON string
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+# Constants for face recognition
+FACE_RECOGNITION_TOLERANCE = 0.35  # Lower tolerance for stricter matching
+MIN_FACE_ENCODINGS = 3  # Minimum number of face encodings required
+MAX_FACE_ENCODINGS = 5  # Maximum number of face encodings allowed
+FACE_DISTANCE_THRESHOLD = 0.6  # Maximum face distance for a match
+
+def preprocess_image(image):
+    """Preprocess image for face recognition"""
+    # Convert to RGB
+    rgb_img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    
+    # Resize image to standard size
+    target_size = (640, 480)
+    rgb_img = cv2.resize(rgb_img, target_size)
+    
+    # Apply histogram equalization for better lighting
+    ycrcb = cv2.cvtColor(rgb_img, cv2.COLOR_RGB2YCrCb)
+    ycrcb[:,:,0] = cv2.equalizeHist(ycrcb[:,:,0])
+    rgb_img = cv2.cvtColor(ycrcb, cv2.COLOR_YCrCb2RGB)
+    
+    return rgb_img
 
 class User(db.Model, UserMixin):
     __tablename__ = "user"
@@ -37,6 +75,9 @@ class User(db.Model, UserMixin):
     state = db.Column(db.String(100))
     role = db.Column(db.String(100), default="user")
     last_login = db.Column(db.DateTime, default=datetime.utcnow)
+    face_encodings = db.relationship('FaceEncoding', backref='user', lazy=True)
+    avatar = db.Column(db.String(10), default='🤖')
+    robot_name = db.Column(db.String(32), default='AI')
 
     def generate_password(self, simple_password):
         self.password_hash = generate_password_hash(simple_password)
@@ -958,6 +999,259 @@ with app.app_context():
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.WARNING)
+
+# Face Recognition Routes
+@app.route('/api/face/register', methods=['POST'])
+def register_face():
+    try:
+        data = request.json
+        image_data = data.get('image')
+        email = data.get('email')
+        
+        if not email:
+            return jsonify({'error': 'Email is required for face registration.'}), 400
+            
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return jsonify({'error': 'User not found for the provided email.'}), 404
+            
+        # Check if user already has maximum number of face encodings
+        existing_encodings = FaceEncoding.query.filter_by(user_id=user.id).count()
+        if existing_encodings >= MAX_FACE_ENCODINGS:
+            return jsonify({'error': f'Maximum number of face encodings ({MAX_FACE_ENCODINGS}) already registered.'}), 400
+            
+        # Decode base64 image
+        image_bytes = base64.b64decode(image_data.split(',')[1])
+        nparr = np.frombuffer(image_bytes, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        
+        # Preprocess image
+        rgb_img = preprocess_image(img)
+        
+        # Detect face and get encoding
+        face_locations = face_recognition.face_locations(rgb_img)
+        
+        if not face_locations:
+            return jsonify({'error': 'No face detected in the image.'}), 400
+            
+        if len(face_locations) > 1:
+            return jsonify({'error': 'Multiple faces detected. Please ensure only one face is visible.'}), 400
+            
+        face_encoding = face_recognition.face_encodings(rgb_img, face_locations)[0]
+        
+        # Store encoding
+        new_encoding = FaceEncoding(
+            user_id=user.id,
+            encoding=json.dumps(face_encoding.tolist())
+        )
+        db.session.add(new_encoding)
+        db.session.commit()
+        
+        # Return remaining encodings needed
+        remaining = MAX_FACE_ENCODINGS - (existing_encodings + 1)
+        return jsonify({
+            'message': 'Face registered successfully',
+            'remaining_encodings': remaining,
+            'total_encodings': existing_encodings + 1
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/face/detect', methods=['POST'])
+def detect_face():
+    try:
+        data = request.json
+        image_data = data.get('image')
+        
+        # Decode base64 image
+        image_bytes = base64.b64decode(image_data.split(',')[1])
+        nparr = np.frombuffer(image_bytes, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        
+        # Preprocess image
+        rgb_img = preprocess_image(img)
+        
+        # Detect face
+        face_locations = face_recognition.face_locations(rgb_img)
+        
+        return jsonify({
+            'face_detected': len(face_locations) == 1,
+            'multiple_faces': len(face_locations) > 1
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/face/login', methods=['POST'])
+def face_login():
+    try:
+        data = request.json
+        image_data = data.get('image')
+        emotion = data.get('emotion', 'neutral')
+        location = data.get('location', 'web')
+        
+        # Decode base64 image
+        image_bytes = base64.b64decode(image_data.split(',')[1])
+        nparr = np.frombuffer(image_bytes, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        
+        # Preprocess image
+        rgb_img = preprocess_image(img)
+        
+        # Detect face and get encoding
+        face_locations = face_recognition.face_locations(rgb_img)
+        if not face_locations:
+            return jsonify({'error': 'No face detected in the image.'}), 400
+        if len(face_locations) > 1:
+            return jsonify({'error': 'Multiple faces detected. Please ensure only one face is visible.'}), 400
+            
+        face_encoding = face_recognition.face_encodings(rgb_img, face_locations)[0]
+        
+        # Compare with stored encodings
+        users = User.query.all()
+        best_match = None
+        best_match_distance = float('inf')
+        
+        for user in users:
+            if not user.face_encodings:
+                continue
+            stored_encodings = [np.array(json.loads(encoding.encoding)) for encoding in user.face_encodings]
+            face_distances = face_recognition.face_distance(stored_encodings, face_encoding)
+            min_distance = np.min(face_distances)
+            if min_distance < best_match_distance and min_distance < FACE_DISTANCE_THRESHOLD:
+                best_match = user
+                best_match_distance = min_distance
+        
+        if best_match:
+            login_user(best_match)
+            best_match.last_login = datetime.utcnow()
+            
+            # Log the login attempt
+            log = FaceLoginLog(
+                user_id=best_match.id,
+                confidence=1 - (best_match_distance / FACE_DISTANCE_THRESHOLD),
+                location=location,
+                emotion=emotion
+            )
+            db.session.add(log)
+            db.session.commit()
+            
+            return jsonify({
+                'message': 'Login successful',
+                'user': {
+                    'id': best_match.id,
+                    'username': best_match.username,
+                    'role': best_match.role,
+                    'avatar': best_match.avatar or '👤',
+                    'robot_name': best_match.robot_name or 'AI',
+                    'email': best_match.email
+                },
+                'confidence': 1 - (best_match_distance / FACE_DISTANCE_THRESHOLD)
+            }), 200
+            
+        return jsonify({'error': 'Face not recognized'}), 401
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/face/reset', methods=['POST'])
+def reset_face_data():
+    try:
+        data = request.json
+        email = data.get('email')
+        if not email:
+            return jsonify({'error': 'Email is required to reset face data.'}), 400
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return jsonify({'error': 'User not found for the provided email.'}), 404
+        # Delete all face encodings for this user
+        FaceEncoding.query.filter_by(user_id=user.id).delete()
+        db.session.commit()
+        return jsonify({'message': 'Face data reset successfully.'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# New model for login attempt log
+class FaceLoginLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    location = db.Column(db.String(128))
+    confidence = db.Column(db.Float)
+    emotion = db.Column(db.String(32))
+    user = db.relationship('User', backref='login_logs')
+
+# Endpoint to set avatar and robot name
+@app.route('/api/user/avatar', methods=['POST'])
+def set_avatar():
+    data = request.json
+    email = data.get('email')
+    avatar = data.get('avatar')
+    robot_name = data.get('robot_name')
+    if not email or not avatar or not robot_name:
+        return jsonify({'error': 'Missing required fields.'}), 400
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'error': 'User not found.'}), 404
+    user.avatar = avatar
+    user.robot_name = robot_name
+    db.session.commit()
+    return jsonify({'message': 'Avatar and robot name updated.'})
+
+# Endpoint to get avatar and robot name
+@app.route('/api/user/avatar', methods=['GET'])
+def get_avatar():
+    email = request.args.get('email')
+    if not email:
+        return jsonify({'error': 'Email required.'}), 400
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'error': 'User not found.'}), 404
+    return jsonify({'avatar': user.avatar, 'robot_name': user.robot_name})
+
+# Endpoint to log a face login attempt
+@app.route('/api/face/loginlog', methods=['POST'])
+def log_face_login():
+    data = request.json
+    email = data.get('email')
+    confidence = data.get('confidence')
+    location = data.get('location')
+    emotion = data.get('emotion')
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'error': 'User not found.'}), 404
+    log = FaceLoginLog(user_id=user.id, confidence=confidence, location=location, emotion=emotion)
+    db.session.add(log)
+    db.session.commit()
+    return jsonify({'message': 'Login attempt logged.'})
+
+# Endpoint to fetch login logs for a user
+@app.route('/api/face/loginlog', methods=['GET'])
+def get_face_login_logs():
+    email = request.args.get('email')
+    if not email:
+        return jsonify({'error': 'Email required.'}), 400
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'error': 'User not found.'}), 404
+    logs = FaceLoginLog.query.filter_by(user_id=user.id).order_by(FaceLoginLog.timestamp.desc()).limit(20).all()
+    return jsonify([
+        {
+            'timestamp': log.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+            'location': log.location,
+            'confidence': log.confidence,
+            'emotion': log.emotion
+        } for log in logs
+    ])
+
+@app.route('/face-login')
+def face_login_page():
+    return render_template('face_login.html')
+
+@app.route('/face-register')
+def face_register_page():
+    return render_template('face_register.html')
 
 if __name__ == '__main__':
     print("Flask API server is running at http://localhost:5001/api")
